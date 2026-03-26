@@ -1,41 +1,76 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>积分商店</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
         :root{--p:#4361ee;--s:#3f37c9;--g:#4cc9f0;--a:#f72585;--b:#dee2e6;--bg:#f5f7fa;--bg2:#c3cfe2;--w:#fff}
         *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
         body{min-height:100vh;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:24px}
-        .container{max-width:1200px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);overflow:hidden}
+        .container{max-width:1200px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow:hidden}
         header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 32px;background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
         h1{font-size:1.5rem;font-weight:600;display:flex;align-items:center;gap:8px}
         nav a{color:#fff;text-decoration:none;margin:0 12px;opacity:.8}nav a.active,nav a:hover{opacity:1}
         .wallet{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:50px;font-weight:600}
+
         .content{padding:32px}
         .tab-head{display:flex;gap:24px;margin-bottom:24px;border-bottom:2px solid var(--b)}
         .tab-btn{padding:10px 20px;font-weight:600;cursor:pointer;color:#6c757d;border-bottom:3px solid transparent}
         .tab-btn.active{color:var(--p);border-color:var(--p)}
         .tab{display:none}.tab.active{display:block}
+
         .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px}
-        .card{background:var(--w);border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.05);overflow:hidden;transition:.25s}.card:hover{transform:translateY(-4px)}
+        .card{position:relative;background:var(--w);border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.05);overflow:hidden;transition:.25s}.card:hover{transform:translateY(-4px)}
         .pic{height:140px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff}
         .body{padding:16px}.title{font-weight:600;margin-bottom:6px}.price{color:var(--a);font-weight:700;margin-bottom:12px}
         .btn{width:100%;padding:8px 0;border:none;border-radius:8px;font-weight:600;cursor:pointer;background:var(--a);color:#fff}
         .btn:disabled{background:var(--b);cursor:not-allowed;color:#6c757d}
-        form{margin-top:32px;display:grid;grid-template-columns:1fr 1fr 120px;gap:16px}
-        input{padding:10px;border:1px solid var(--b);border-radius:8px}
+        .del{position:absolute;top:8px;right:8px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(0,0,0,0.35);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;opacity:.8}
+        .del:hover{opacity:1}
+
+        form{margin-top:32px;display:grid;grid-template-columns:1fr 140px;gap:16px;align-items:end}
+        input{padding:10px;border:1px solid var(--b);border-radius:8px;width:100%}
         .btn-add{background:var(--g);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+
         .list li{margin:12px 0;padding:12px;border:1px solid var(--b);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
         .list .time{color:#6c757d;font-size:.85rem}
-    </style></head><body>
+        .count-tag{position:absolute;top:8px;left:8px;background:var(--g);color:#fff;font-size:.7rem;border-radius:8px;padding:2px 6px}
+
+        /* ===== 手机竖屏响应式 ===== */
+        @media (max-width: 480px) {
+            .container      { width:100%!important; max-width:100%!important; padding:8px; }
+            header          { flex-wrap:wrap!important; padding:12px 8px!important; }
+            nav             { display:flex!important; overflow-x:auto!important; width:100%!important; }
+            nav a           { flex:none!important; padding:8px 6px!important; font-size:.9rem!important; }
+            .wallet         { font-size:.95rem!important; padding:8px!important; }
+            .tab-head       { flex-wrap:wrap!important; gap:8px!important; }
+            .tab-btn        { font-size:.9rem!important; padding:6px 8px!important; }
+            .grid           { grid-template-columns:1fr!important; gap:12px!important; }
+            .card           { padding:12px!important; }
+            .pic            { height:100px!important; }
+            .body, .btn     { font-size:.9rem!important; padding:8px!important; }
+            form            { grid-template-columns:1fr!important; gap:8px!important; }
+            input           { font-size:.95rem!important; padding:8px!important; }
+            .list li        { font-size:.85rem!important; padding:8px!important; }
+            .time           { font-size:.8rem!important; }
+            .count-tag      { font-size:.7rem!important; padding:2px 4px!important; }
+        }
+    </style>
+</head>
+<body>
 <div class="container">
     <header>
         <h1><i class="fas fa-store"></i> 积分商店</h1>
         <nav>
-            <a href="index.html"  class="active">打分系统</a>
+            <a href="index.html">打分系统</a>
             <a href="note.html">闪电笔记</a>
             <a href="todo.html">代办清单</a>
-            <a href="store.html">积分商店</a>
+            <a href="store.html" class="active">积分商店</a>
+            <a href="user.html">用户信息</a>
+            <a href="settings.html">设置</a>
         </nav>
         <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
     </header>
@@ -46,17 +81,19 @@
             <div class="tab-btn" data-tab="hist">兑换记录</div>
         </div>
 
-        <!-- 商品 -->
+        <!-- 商品 TAB -->
         <div class="tab active" id="goods">
             <div class="grid" id="grid"></div>
+
+            <!-- 添加商品表单 -->
             <form id="add">
-                <input id="name" placeholder="商品名" required>
-                <input id="price" type="number" min="1" placeholder="所需积分" required>
+                <input id="name" placeholder="商品名" required />
+                <input id="price" type="number" min="1" placeholder="所需积分" required />
                 <button class="btn-add">添加商品</button>
             </form>
         </div>
 
-        <!-- 记录 -->
+        <!-- 记录 TAB -->
         <div class="tab" id="hist">
             <ul class="list" id="history"></ul>
         </div>
@@ -67,87 +104,127 @@
     if(!localStorage.currentUser) location.href='login.html';
 
     const user   = localStorage.currentUser,
-        $      = id=>document.getElementById(id),
-        calc   = (s,m)=>(s/30)*m,
+        $      = id => document.getElementById(id),
         colors = ['#4361ee','#f72585','#7209b7','#3a0ca3','#f15bb5'];
 
-    let store={products:[],history:[]},wallet=0;
+    /* ======= 状态 ======= */
+    let store={products:[],history:[]}, wallet=0;
 
-    /* ---- 余额实时函数：每次调用都会重新抓 /api/tasks/<user> ---- */
+    /* ======= 余额 ======= */
     async function updateWal(){
-        const [tasks] = await Promise.all([fetch(`/api/tasks/${user}`).then(r=>r.json())]);
-        const earned  = Math.floor(tasks.items ? tasks.items.reduce((s,t)=>s+calc(t.score,t.minutes),0)
-            : tasks.reduce((s,t)=>s+calc(t.score,t.minutes),0));
-        const spent   = store.history.reduce((s,x)=>s+x.price,0);
-        wallet = earned - spent;
+        const tasks = await fetch(`/api/tasks/${user}`).then(r=>r.json());
+        const earned = tasks.items
+            ? tasks.items.reduce((s,t)=>s + (t.score/30)*t.minutes, 0)
+            : tasks.reduce((s,t)=>s + (t.score/30)*t.minutes, 0);
+        const spent  = store.history.reduce((s,x)=>s+x.price,0);
+        wallet = Math.floor(earned) - spent;
         $('wal').textContent = wallet;
     }
 
-    /* ---- 初始化 ---- */
+    /* ======= 初始化 ======= */
     async function init(){
         store = await fetch(`/api/store/${user}`).then(r=>r.json())
-            .then(d=>d.products ? d : { products:[], history:[] });
+            .then(d=>d.products ? d : {products:[],history:[]});
+        // 向下兼容：旧数据可能只有 value 字段
+        store.products.forEach(p=>{
+            if(p.price===undefined && p.value!==undefined) p.price = p.value;
+        });
         await updateWal();
         renderGoods(); renderHist();
     }
+    init();
 
-    /* ---- 渲染商品 ---- */
+    /* ======= 渲染商品 ======= */
     function renderGoods(){
         const g=$('grid');g.innerHTML='';
         if(!store.products.length){
             g.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#6c757d">暂无商品</p>'; return;
         }
+
+        // 统计最近 天购买次数
+        const weekAgo = Date.now() - 7*24*3600*1000;
+        const countMap = {};
+        store.history.forEach(h=>{
+            if(h.date >= weekAgo) countMap[h.id] = (countMap[h.id]||0)+1;
+        });
+
         store.products.forEach(p=>{
-            const card=document.createElement('div');card.className='card';
             const bg=colors[Math.random()*colors.length|0];
-            card.innerHTML=`
-      <div class="pic" style="background:${bg}"><i class="fas fa-gift"></i></div>
-      <div class="body"><div class="title">${p.name}</div><div class="price">${p.price} 积分</div>
-      <button class="btn" data-id="${p.id}" ${wallet<p.price?'disabled':''}>兑换</button></div>`;
+            const card=document.createElement('div');card.className='card';
+
+            card.innerHTML=
+                `<div class="pic" style="background:${bg}"><i class="fas fa-gift"></i></div>` +
+                `<div class="body">` +
+                `<div class="title">${p.name}</div>` +
+                `<div class="price">${p.price} 积分</div>` +
+                `<button class="btn buy" data-id="${p.id}" ${wallet<p.price?'disabled':''}>兑换</button>` +
+                `</div>` +
+                `<button class="del" data-del="${p.id}" title="删除"><i class="fas fa-trash-alt"></i></button>`;
+            if(countMap[p.id]){
+                const tag=document.createElement('div');
+                tag.className='count-tag';
+                tag.textContent=`近7天 ×${countMap[p.id]}`;
+                card.appendChild(tag);
+            }
             g.appendChild(card);
         });
     }
 
-    /* ---- 渲染记录 ---- */
+    /* ======= 渲染记录 ======= */
     function renderHist(){
-        const h=$('history');h.innerHTML='';
-        if(!store.history.length){h.innerHTML='<li>暂无记录</li>';return;}
+        const ul=$('history');ul.innerHTML='';
+        if(!store.history.length){ul.innerHTML='<li>暂无记录</li>';return;}
         [...store.history].sort((a,b)=>b.date-a.date).forEach(r=>{
             const li=document.createElement('li');
-            li.innerHTML=`<span>${r.name}</span><span class="time">-${r.price} ｜ ${new Date(r.date).toLocaleString()}</span>`;
-            h.appendChild(li);
+            li.innerHTML=`<span>${r.name}</span><span class="time">-${r.price} | ${new Date(r.date).toLocaleString()}</span>`;
+            ul.appendChild(li);
         });
     }
 
-    /* ---- 保存 ---- */
-    function save(){ return fetch(`/api/store/${user}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(store)}); }
+    /* ======= 保存到服务器 ======= */
+    function save(){
+        return fetch(`/api/store/${user}`,{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(store)
+        });
+    }
 
-    /* ---- 事件：添加商品 ---- */
-    $('add').onsubmit=async e=>{
+    /* ======= 添加商品 ======= */
+    $('add').onsubmit = async e=>{
         e.preventDefault();
-        store.products.push({id:Date.now(),name:$('name').value.trim(),price:+$('price').value});
-        $('name').value='';$('price').value='';
+        const p={
+            id   : Date.now(),
+            name : $('name').value.trim(),
+            price: +$('price').value
+        };
+        store.products.push(p);
+        $('add').reset();
         await save(); await updateWal(); renderGoods();
     };
 
-    /* ---- 事件：兑换商品 ---- */
-    $('grid').onclick=async e=>{
-        const id=e.target.dataset.id; if(!id) return;
-        const p=store.products.find(x=>x.id==id);
-        await updateWal();                         // 再次确认最新余额
+    /* ======= 兑换 / 删除 ======= */
+    $('grid').addEventListener('click', async e=>{
+        const delId=e.target.closest('button[data-del]')?.dataset.del;
+        if(delId){
+            if(!confirm('确定删除该商品？')) return;
+            store.products = store.products.filter(p=>p.id!=delId);
+            await save(); renderGoods(); return;
+        }
+        const buyId=e.target.closest('button.buy')?.dataset.id;
+        if(!buyId) return;
+        const p=store.products.find(x=>x.id==buyId);
+        await updateWal();
         if(wallet<p.price){alert('积分不足');return;}
         wallet-=p.price;
-        store.history.push({name:p.name,price:p.price,date:Date.now()});
+        store.history.push({id:p.id,name:p.name,price:p.price,date:Date.now()});
         await save(); await updateWal(); renderGoods(); renderHist();
-    };
+    });
 
-    /* ---- TAB 切换 ---- */
+    /* ======= TAB 切换 ======= */
     document.querySelectorAll('.tab-btn').forEach(btn=>btn.onclick=()=>{
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b===btn));
         document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id===btn.dataset.tab));
     });
-
-    /* ---- 启动 ---- */
-    init();
 </script>
-</body></html>
+</body>
+</html>

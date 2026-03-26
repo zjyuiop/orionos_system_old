@@ -1,4 +1,16 @@
 {
+  "1": {
+    "hash": "$2a$10$wZzWf3mkgj3JW.A/sDC6eOEITcVyoET1aHuzoCzExfnjkA5wEN.3a"
+  },
+  "2": {
+    "hash": "$2a$10$cN6zV8b7HN5ih2NiWcGYaOLzdUhmfpWPqKq.bU6jNhmQGfSV0neIu"
+  },
+  "3": {
+    "hash": "$2a$10$ZR1jM7jiij2h4xb40Uprq.eX6wc4WlRv9.lhNXjyUsVViPxl2ApaO"
+  },
+  "9": {
+    "hash": "$2a$10$i0I0N1V.xGd6JtavK1EXleELNeUK5GgOf7qi7n9ECC/dmhCZEcVKC"
+  },
   "123": {
     "hash": "$2a$10$IwBU16ZTRZzHPAJHWE0ve.xkUYJ979Sv0/U6y6yuWthbeKYTjEcmC"
   },
@@ -18,7 +30,8 @@
     "hash": "$2a$10$xNI5Rilht23mSm8dcTlyruCCeBZiOqmldHZFrExm6wfcu0fVX2YVm"
   },
   "CQMY": {
-    "hash": "$2a$10$hT.K3xj01OQ8yaYDQT.dFOPxW40hv0FjonB3mvOyuh8fqcvVSyR1q"
+    "hash": "$2a$10$hT.K3xj01OQ8yaYDQT.dFOPxW40hv0FjonB3mvOyuh8fqcvVSyR1q",
+    "avatar": "/uploads/8aada5eda3e4fe7bcc93dc3182d67344.png"
   },
   "白熊": {
     "hash": "$2a$10$SywCGA3MQoWpY7oKMeD8sOL9Emv0mGYotrWKQ6EtZWCEf46yWUZpe"
@@ -85,5 +98,23 @@
   },
   "liu": {
     "hash": "$2a$10$vJG5aud7i96/npcD8mdur.lsFawfTyn47N25Eh1ieAJ/RgF4HXtNe"
+  },
+  "撸羊毛": {
+    "hash": "$2a$10$bW1hUva.jIQrZbBuCNBp0uz3L9m6MSNWvGS7vCLMFjF9dB.Ak8UtO"
+  },
+  "辛醇": {
+    "hash": "$2a$10$fVN4hdnKCnlMZ7skZQa1ReSJJrpWOWj7F20ENHfY/PwmBBOcsZAHW"
+  },
+  "Haven": {
+    "hash": "$2a$10$zPthqtJSDU6OG6Hc79yTC..HTNJtmib5/Dm14yfK2EBwb5HpYHU1m"
+  },
+  "windy": {
+    "hash": "$2a$10$wtlpAkGBr9BTwjTOibFlpevjVuyaBmxftrKYNF5UqHSS1H.syE5Cu"
+  },
+  "LFSEvolution": {
+    "hash": "$2a$10$2P3az743Bibj0bTdf/jylO5R/XFjndNE3fyDxNs7Rlni/0gDb4PmW"
+  },
+  "Amnesia": {
+    "hash": "$2a$10$ixzd0Ab3aScOi86k8kWRmO0NatQm0IwfZ/qnam5RAzdswAWQTN6F2"
   }
 }

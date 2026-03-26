@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>导出日度长图</title>
+
+    <!-- 图标、Markdown 渲染 & html2canvas 截图 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root { --p: #4361ee; --s: #3f37c9; --b: #dee2e6; --w: #fff; --gray: #6c757d; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",sans-serif; }
+        body { background:#f5f7fa; padding:12px; }
+        .container {
+            width:100%; max-width:360px; margin:0 auto;
+            background:var(--w); border-radius:16px;
+            box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden;
+        }
+        header {
+            display:flex; align-items:center; justify-content:space-between;
+            background:linear-gradient(90deg,var(--p),var(--s)); color:#fff;
+            padding:14px;
+        }
+        header h1 { font-size:1.3rem; display:flex; align-items:center; gap:6px; }
+        .controls { display:flex; align-items:center; gap:8px; }
+        .controls input[type="date"] {
+            background:transparent; border:none; color:#fff;
+            font-size:0.9rem; cursor:pointer;
+        }
+        .controls button {
+            background:rgba(255,255,255,.2); border:none; color:#fff;
+            padding:6px 10px; border-radius:4px; cursor:pointer;
+            font-size:0.85rem;
+        }
+        /* 个人信息 */
+        .profile {
+            display:flex; align-items:center; gap:12px;
+            padding:12px 16px; background:rgba(67,97,238,.1);
+        }
+        .profile img {
+            width:56px; height:56px; border-radius:50%; object-fit:cover;
+            border:2px solid var(--p);
+        }
+        .userinfo { display:flex; flex-direction:column; }
+        .userinfo .name { font-size:1rem; font-weight:600; color:var(--p); }
+        .userinfo .meta { font-size:0.8rem; color:var(--gray); }
+
+        section { padding:16px; border-bottom:1px solid var(--b); }
+        section:last-of-type { border-bottom:none; }
+        section h2 {
+            font-size:1.1rem; display:flex; align-items:center; gap:6px;
+            margin-bottom:10px;
+        }
+        /* 仪表盘 */
+        .sum { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin-bottom:12px; }
+        .card { background:var(--w); border-radius:10px;
+            box-shadow:0 3px 10px rgba(0,0,0,.05);
+            padding:12px; text-align:center;
+        }
+        .card h4 { font-size:0.8rem; color:var(--gray); margin-bottom:4px; }
+        .card .v { font-size:1.4rem; font-weight:700; }
+
+        /* 表格 */
+        table { width:100%; border-collapse:collapse; margin-bottom:12px; font-size:0.85rem; }
+        thead { background:var(--b); }
+        th,td { border:1px solid var(--b); padding:6px; text-align:center; }
+        th:first-child, td:first-child { text-align:left; }
+
+        /* 复盘 */
+        .preview { border:1px solid var(--b); border-radius:8px;
+            padding:10px; background:#fff; min-height:120px;
+            overflow:visible; white-space:normal; font-size:0.9rem;
+        }
+        .preview ol, .preview ul { padding-left:1em; margin:0.3em 0; }
+        .preview li { margin:0.1em 0; }
+
+        /* 导出按钮 */
+        .btn-export { display:block; width:100%; padding:14px 0;
+            font-size:1rem; font-weight:600; background:var(--p); color:#fff;
+            border:none; border-radius:0 0 8px 8px; cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="capture" class="container">
+    <header>
+        <h1><i class="fas fa-chart-pie"></i> 日度长图</h1>
+        <div class="controls">
+            <input type="date" id="exportDate" />
+            <button id="btnBack"><i class="fas fa-arrow-left"></i></button>
+        </div>
+    </header>
+
+    <!-- 个人信息 -->
+    <div class="profile">
+        <img id="avatar" src="/uploads/default-avatar.png" alt="头像" />
+        <div class="userinfo">
+            <div class="name" id="uname">用户</div>
+            <div class="meta" id="sig">暂无签名</div>
+        </div>
+    </div>
+
+    <!-- 仪表盘 -->
+    <section id="dashboardSec">
+        <div class="sum">
+            <div class="card"><h4>记录数</h4><div class="v" id="dash-count">–</div></div>
+            <div class="card"><h4>总时长(min)</h4><div class="v" id="dash-duration">–</div></div>
+            <div class="card"><h4>今日积分</h4><div class="v" id="dash-today-pts">–</div></div>
+            <div class="card"><h4>全局积分</h4><div class="v" id="dash-global-pts">–</div></div>
+        </div>
+    </section>
+
+    <!-- 打分系统 -->
+    <section id="scoreSec">
+        <h2><i class="fas fa-star-half-alt"></i> 打分系统</h2>
+        <table id="scoreTable">
+            <thead><tr><th>任务</th><th>分数</th><th>时长</th><th>积分</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <!-- 当日复盘 -->
+    <section id="reviewSec">
+        <h2><i class="fas fa-book"></i> 当日复盘</h2>
+        <div id="revPrev" class="preview">加载中…</div>
+    </section>
+
+    <!-- 导出长图按钮 -->
+    <button id="btnShot" class="btn-export">📸 导出长图</button>
+</div>
+
+<script>
+    if (!localStorage.currentUser) location.href='login.html';
+    const user = localStorage.currentUser;
+    const exportDate = document.getElementById('exportDate');
+    const today = new Date().toISOString().slice(0,10);
+    exportDate.value = today;
+
+    // 个人信息获取
+    fetch(`/api/user/${user}`)
+        .then(r=>r.json())
+        .then(u=>{
+            document.getElementById('uname').textContent = u.nickname || user;
+            document.getElementById('sig').textContent = u.signature || '暂无签名';
+            if(u.avatar) document.getElementById('avatar').src = u.avatar;
+        });
+
+    // DOM refs
+    const tbody       = document.querySelector('#scoreTable tbody');
+    const revPrev     = document.getElementById('revPrev');
+    const btnShot     = document.getElementById('btnShot');
+    const btnBack     = document.getElementById('btnBack');
+    const dashCount   = document.getElementById('dash-count');
+    const dashDur     = document.getElementById('dash-duration');
+    const dashPtsDay  = document.getElementById('dash-today-pts');
+    const dashPtsAll  = document.getElementById('dash-global-pts');
+
+    btnBack.onclick = () => location.href='index.html';
+
+    async function renderExport() {
+        const cur = exportDate.value;
+        const tasks = await fetch(`/api/tasks/${user}`).then(r=>r.json()).catch(()=>({items:[],reviews:{}}));
+
+        // 仪表盘
+        const all = tasks.items;
+        const todayItems = all.filter(t=>t.date.slice(0,10)===cur);
+        dashCount.textContent  = todayItems.length;
+        dashDur.textContent    = todayItems.reduce((s,t)=>s+t.minutes,0);
+        dashPtsDay.textContent = todayItems.reduce((s,t)=>s+(t.score/30*t.minutes),0).toFixed(1);
+        dashPtsAll.textContent = all.reduce((s,t)=>s+(t.score/30*t.minutes),0).toFixed(1);
+
+        // 打分表
+        tbody.innerHTML = '';
+        todayItems.forEach(t=>{
+            const pts = (t.score/30*t.minutes).toFixed(1);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${t.desc||'-'}</td><td>${t.score!=null?t.score:'-'}</td><td>${t.minutes!=null?t.minutes:'-'}</td><td>${pts}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        // 复盘
+        const md = tasks.reviews?.[cur];
+        if(md) {
+            const hasMd = /(^[#>*\-]|```|\[.+\]\(.+\))/m.test(md);
+            revPrev.innerHTML = hasMd ? marked.parse(md) : md.split('\n').map(l=>`<div>${l||'<br>'}</div>`).join('');
+        } else revPrev.textContent = '今天还没有写复盘';
+    }
+
+    exportDate.addEventListener('change', renderExport);
+    renderExport();
+
+    btnShot.onclick = async ()=>{
+        btnShot.disabled = true;
+        btnShot.textContent = '生成中…';
+        const canvas = await html2canvas(document.getElementById('capture'),{backgroundColor:'#ffffff',scale: window.devicePixelRatio||2});
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');a.href = url;a.download = `${exportDate.value}-日度长图.png`;a.click();
+        btnShot.disabled = false;btnShot.textContent = '📸 导出长图';
+    };
+</script>
+</body>
+</html>

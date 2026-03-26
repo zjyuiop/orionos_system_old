@@ -9,6 +9,16 @@ const path    = require('path');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+//-------------------------------------------------- upload begin
+const multer = require('multer');
+//const path   = require('path');
+//const fs     = require('fs');
+const upDir  = path.join(__dirname,'public','uploads');
+if(!fs.existsSync(upDir)) fs.mkdirSync(upDir,{recursive:true});
+const upload = multer({ dest: upDir });
+//-------------------------------------------------- upload end
+
+
 /* ========= 1. 静态资源 ========= */
 app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (_, res) => res.redirect('/index.html'));
@@ -29,6 +39,8 @@ const j       = (...p)           => path.join(...p);
 const read    = (f, def)         => { try{return JSON.parse(fs.readFileSync(f,'utf8'));}catch{ return def;} };
 const write   = (f, v)           => fs.writeFileSync(f, JSON.stringify(v, null, 2));
 const fp      = (folder, file)   => j(DATA, folder, file);
+
+
 
 /* =======================================================
    4. 登录 / 注册
@@ -108,3 +120,55 @@ app.post('/api/todos/:user', (req,res)=>{
 app.listen(PORT, '0.0.0.0', () =>
     console.log(`✅  Server listening at http://localhost:${PORT}`)
 );
+
+/* =======================================================
+   上传媒体文件  /api/upload
+   前端字段：files   （支持多文件）
+   ======================================================= */
+app.post('/api/upload', upload.array('files',10), (req,res)=>{
+    const urls = req.files.map(f=>{
+        const ext = path.extname(f.originalname);
+        const newPath = f.path + ext;
+        fs.renameSync(f.path,newPath);
+        return '/uploads/' + path.basename(newPath);   // 浏览器可直接访问
+    });
+    res.json({ urls });
+});
+
+
+
+
+/* ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+   用户信息接口
+   1) 读取   GET  /api/user/:username
+   2) 保存   POST /api/user/:username
+   --------------------------------------------
+   依赖:
+     • read(文件路径, 默认值)  —— 你的封装，用来读取 JSON
+     • write(文件路径, 数据)   —— 同上，写回 JSON
+     • USER_FILE              —— users.json 的路径常量
+   ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ */
+
+/* === 读取用户信息 ================================= */
+app.get('/api/user/:username', (req, res) => {
+    const users = read(USER_FILE, {});
+    const u = users[req.params.username];
+    if (!u) return res.status(404).json({ msg:'用户不存在' });
+
+    const { avatar='', nickname='', gender='', birthday='', location='',
+        signature='', wechat='' } = u;
+    res.json({ avatar, nickname, gender, birthday, location, signature, wechat });
+});
+
+/* === 保存 / 更新用户信息 ============================ */
+app.post('/api/user/:username', (req, res) => {
+    const uname = req.params.username;
+    const users = read(USER_FILE, {});
+    if (!users[uname]) return res.status(404).json({ msg:'用户不存在' });
+
+    const allowed = ['avatar','nickname','gender','birthday','location','signature','wechat'];
+    allowed.forEach(k => (req.body[k] !== undefined) && (users[uname][k] = req.body[k]));
+
+    write(USER_FILE, users);
+    res.json({ msg:'ok' });
+});

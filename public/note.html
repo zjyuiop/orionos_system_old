@@ -19,6 +19,23 @@
         .list li{margin:12px 0;padding:14px 18px;border:1px solid var(--b);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
         .time{color:#6c757d;font-size:.85rem}
         .del{border:none;background:none;color:var(--a);cursor:pointer}
+
+
+        /* ===== 手机竖屏响应式 ===== */
+        @media (max-width: 480px) {
+            .container    { width:100%!important; max-width:100%!important; padding:8px; }
+            header        { flex-wrap:wrap!important; padding:12px 8px!important; }
+            nav           { display:flex!important; overflow-x:auto!important; width:100%!important; }
+            nav a         { flex:none!important; padding:8px 6px!important; font-size:.9rem!important; }
+            form          { grid-template-columns:1fr!important; gap:8px!important; }
+            textarea      { font-size:.95rem!important; padding:8px!important; }
+            .btn          { font-size:.95rem!important; padding:8px!important; }
+            .wallet       { font-size:.95rem!important; padding:8px!important; }
+            .list li      { padding:10px!important; font-size:.85rem!important; }
+        }
+    </style>
+
+
     </style></head><body>
 <div class="container">
     <header>
@@ -28,6 +45,8 @@
             <a href="note.html" class="active">闪电笔记</a>
             <a href="todo.html">代办清单</a>
             <a href="store.html">积分商店</a>
+            <a href="user.html">用户信息</a>
+            <a href="settings.html">设置</a>
         </nav>
         <div class="wallet"><i class="fas fa-coins"></i></div>
     </header>

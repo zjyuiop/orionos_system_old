@@ -18,7 +18,37 @@
         .btn{padding:12px;border:none;border-radius:10px;font-weight:600;background:var(--p);color:#fff;cursor:pointer}
         .list li{margin:10px 0;padding:12px 16px;border:1px solid var(--b);border-radius:10px;display:flex;align-items:center;gap:12px}
         .list li.done span{text-decoration:line-through;color:#6c757d}
-        .del{border:none;background:none;color:var(--a);cursor:pointer;margin-left:auto}
+        .del {
+            border: none;
+            background: none;
+            color: var(--a);
+            cursor: pointer;
+            margin-left: auto;
+            display: flex;            /* 新增，确保按钮撑开以显示图标 */
+            align-items: center;
+            justify-content: center;
+        }
+        /* 调整图标大小，让它更清晰 */
+        .del i {
+            font-size: 1rem;
+        }
+
+
+
+        /* ===== 手机竖屏响应式 ===== */
+        @media (max-width: 480px) {
+            .container    { width:100%!important; max-width:100%!important; padding:8px; }
+            header        { flex-wrap:wrap!important; padding:12px 8px!important; }
+            nav           { display:flex!important; overflow-x:auto!important; width:100%!important; }
+            nav a         { flex:none!important; padding:8px 6px!important; font-size:.9rem!important; }
+            form          { grid-template-columns:1fr!important; gap:8px!important; }
+            input         { font-size:.95rem!important; padding:8px!important; }
+            .btn          { font-size:.95rem!important; padding:8px!important; }
+            .wallet       { font-size:.95rem!important; padding:8px!important; }
+            .list li      { padding:10px!important; font-size:.85rem!important; }
+            .del          { font-size:1rem!important; }
+        }
+    </style>
     </style></head><body>
 <div class="container">
     <header>
@@ -28,8 +58,10 @@
             <a href="note.html">闪电笔记</a>
             <a href="todo.html" class="active">代办清单</a>
             <a href="store.html">积分商店</a>
+            <a href="user.html">用户信息</a>
+            <a href="settings.html">设置</a>
         </nav>
-        <div class="wallet"><i class="fas fa-coins"></i></div>
+        <div class="wallet"><i class="fas fa-coins"></i><span id="wal"></span></div>
     </header>
 
     <div class="content">
@@ -45,8 +77,17 @@
     if(!localStorage.currentUser) location.href='login.html';
     const user=localStorage.currentUser,$=id=>document.getElementById(id);
     let todos=[];
+    const list = $('list');          // 之后 render() 和事件委托都共用
 
-    const load=()=>fetch(`/api/todos/${user}`).then(r=>r.json()).then(d=>todos=d);
+    /* -------- 读取并补旧数据 -------- */
+    const load = () => fetch(`/api/todos/${user}`)
+        .then(r => r.json())
+        .then(d => {
+            todos = d;                               // ① 原本就有
+            todos.forEach(t => {                     // ② 给旧记录补字段
+                if (t.deleted === undefined) t.deleted = false;
+            });
+        });
     const save=()=>fetch(`/api/todos/${user}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(todos)});
     const wallet=async()=>{
         const t=await fetch(`/api/tasks/${user}`).then(r=>r.json()).catch(()=>[]);
@@ -56,29 +97,52 @@
         $('wal').textContent=Math.floor(earned-spent);
     };
 
-    function render(){
-        const ul=$('list');ul.innerHTML='';
-        if(!todos.length){ul.innerHTML='<li>暂无待办</li>';return;}
-        todos.forEach((t,i)=>{
-            const li=document.createElement('li');li.className=t.done?'done':'';
-            li.innerHTML=`<input type="checkbox" data-i="${i}" ${t.done?'checked':''}>
-      <span>${t.text}</span>
-      <button class="del" data-i="${i}"><i class="fas fa-trash"></i></button>`;
-            ul.appendChild(li);
-        });
+    function render() {
+        list.innerHTML = '';
+        todos
+            .filter(t => !t.deleted)                     // ① 只取未删除项
+            .forEach(t => {
+                const realIdx = todos.indexOf(t);          // ② 记录原数组索引
+                const li = document.createElement('li');
+                li.innerHTML = `
+          <input type="checkbox" data-i="${realIdx}" ${t.done ? 'checked' : ''}>
+          <span>${t.text}</span>
+          <button class="del" data-i="${realIdx}">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+                list.appendChild(li);
+            });
     }
+
+    /* 事件绑定、save() 等其余代码 … */
 
     $('addForm').onsubmit=async e=>{
         e.preventDefault();
-        todos.push({text:$('task').value.trim(),done:false});
+        todos.push({text:$('task').value.trim(),done:false,deleted: false});
         $('task').value='';await save();render();
     };
 
-    $('list').onclick=async e=>{
-        const idx=e.target.dataset.i;if(idx===undefined)return;
-        if(e.target.classList.contains('del')){todos.splice(idx,1);}
-        else if(e.target.type==='checkbox'){todos[idx].done=e.target.checked;}
-        await save();render();
+
+
+    list.onclick = async e => {
+        /* ---------- 删除按钮 ---------- */
+        const delBtn = e.target.closest('button.del');
+        if (delBtn) {
+            const idx = +delBtn.dataset.i;   // 原数组索引
+            todos[idx].deleted = true;       // 逻辑删除，不 splice
+            await save();
+            render();
+            return;                          // 删完就别再往下走
+        }
+
+        /* ---------- 勾选框 ---------- */
+        if (e.target.type === 'checkbox') {
+            const idx = +e.target.dataset.i;
+            todos[idx].done = e.target.checked;
+            await save();
+            render();
+        }
     };
 
     (async()=>{await load();render();wallet();})();

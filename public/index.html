@@ -1,130 +1,411 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <title>行动评分系统</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 图标 & Markdown 渲染库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
-        :root{--p:#4361ee;--s:#3f37c9;--g:#4cc9f0;--a:#f72585;--b:#dee2e6;--bg:#f5f7fa;--bg2:#c3cfe2;--w:#fff;--gray:#6c757d}
-        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
-        body{min-height:100vh;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:24px}
-        .container{max-width:1200px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);overflow:hidden}
-        header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 32px;background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
-        .logo{display:flex;align-items:center;gap:8px;font-size:1.6rem;font-weight:600}
-        nav a{color:#fff;text-decoration:none;margin:0 12px;opacity:.85}nav a.active,nav a:hover{opacity:1}
-        .wallet{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:50px;font-weight:600}
-        .date{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:6px 12px;border-radius:8px}
-        .date input{background:transparent;border:none;color:#fff;cursor:pointer}input::-webkit-calendar-picker-indicator{filter:invert(1)}
-        .content{padding:32px}
-        form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
-        input,select{padding:10px;border:1px solid var(--b);border-radius:8px;font-size:1rem}
-        .btn{grid-column:1/-1;padding:11px;border:none;border-radius:10px;font-weight:600;background:var(--p);color:#fff;cursor:pointer}
-        .table{overflow-x:auto;border:1px solid var(--b);border-radius:12px;margin-bottom:24px}
-        table{width:100%;border-collapse:collapse}thead{background:var(--bg)}
-        th,td{padding:14px 18px;text-align:right}th:first-child,td:first-child{text-align:left}
-        tr:nth-child(even){background:rgba(0,0,0,.03)}tr:hover{background:rgba(76,201,240,.08)}
-        .del{border:none;background:none;color:var(--a);cursor:pointer}
-        .pg{margin-top:4px;width:100%;height:6px;background:var(--b);border-radius:3px;overflow:hidden}.pg>div{height:100%;background:linear-gradient(90deg,var(--g),var(--p))}
-        .sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
-        .card{background:var(--w);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.05);padding:18px;text-align:center}
-        .card h4{font-size:.9rem;color:var(--gray);margin-bottom:6px}.card .v{font-size:1.8rem;font-weight:700}
-        /* 复盘 */
-        .review{background:#fff9e6;border-left:4px solid #ffc107;padding:20px;border-radius:10px}
-        .review h3{display:flex;align-items:center;gap:8px;color:#ff9800;margin-bottom:12px;font-size:1.1rem}
-        textarea{width:100%;min-height:120px;padding:14px;border:1px solid #ffe69c;border-radius:8px;font-size:1rem;resize:vertical}
-        @media(max-width:600px){header{flex-direction:column;gap:12px}th,td{padding:10px}}
-    </style></head><body>
+        :root {
+            --p: #4361ee; --s: #3f37c9; --g: #4cc9f0; --a: #f72585;
+            --b: #dee2e6; --bg: #f5f7fa; --bg2: #c3cfe2; --w: #fff;
+            --gray: #6c757d;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",sans-serif }
+        body { min-height:100vh; background:linear-gradient(135deg,var(--bg),var(--bg2)); padding:24px }
+        .container { max-width:1200px; margin:0 auto; background:var(--w); border-radius:16px;
+            box-shadow:0 10px 30px rgba(0,0,0,.1); overflow:hidden }
+        header { display:flex; justify-content:space-between; align-items:center; gap:24px;
+            flex-wrap:wrap; padding:20px 32px; background:linear-gradient(90deg,var(--p),var(--s));
+            color:#fff }
+        .logo { display:flex; align-items:center; gap:8px; font-size:1.6rem; font-weight:600 }
+        nav a { color:#fff; text-decoration:none; margin:0 12px; opacity:.85 }
+        nav a.active, nav a:hover { opacity:1 }
+        .wallet { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.2);
+            padding:8px 16px; border-radius:50px; font-weight:600 }
+        .date { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.2);
+            padding:6px 12px; border-radius:8px }
+        .date input { background:transparent; border:none; color:#fff; cursor:pointer }
+        input::-webkit-calendar-picker-indicator { filter:invert(1) }
+
+        .content { padding:32px }
+        form { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px;
+            margin-bottom:32px }
+        input, select { padding:10px; border:1px solid var(--b); border-radius:8px; font-size:1rem }
+        .btn { grid-column:1/-1; padding:11px; border:none; border-radius:10px;
+            font-weight:600; background:var(--p); color:#fff; cursor:pointer }
+
+        .table { overflow-x:auto; border:1px solid var(--b); border-radius:12px; margin-bottom:24px }
+        table { width:100%; border-collapse:collapse }
+        thead { background:var(--bg) }
+        th, td { padding:14px 18px; text-align:right }
+        th:first-child, td:first-child { text-align:left }
+        tr:nth-child(even) { background:rgba(0,0,0,.03) }
+        tr:hover { background:rgba(76,201,240,.08) }
+        .del { border:none; background:none; color:var(--a); cursor:pointer }
+
+        /* 进度条样式（旧版） */
+        .pg { margin-top:4px; width:100%; height:6px; background:var(--b);
+            border-radius:3px; overflow:hidden }
+        .pg>div { height:100%; background:linear-gradient(90deg,var(--g),var(--p)) }
+
+        .sum { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;
+            margin-bottom:32px }
+        .card { background:var(--w); border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.05);
+            padding:18px; text-align:center }
+        .card h4 { font-size:.9rem; color:var(--gray); margin-bottom:6px }
+        .card .v { font-size:1.8rem; font-weight:700 }
+
+        /* 复盘编辑器 */
+        .review { background:#fff9e6; border-left:4px solid #ffc107; padding:20px; border-radius:10px }
+        .review h3 { display:flex; align-items:center; gap:8px; color:#ff9800;
+            margin-bottom:14px; font-size:1.1rem }
+        .rev-toolbar { display:flex; gap:10px; margin-bottom:12px }
+        .tool { padding:6px 14px; border:1px solid var(--b); border-radius:6px;
+            background:#f1f3f5; cursor:pointer; font-size:.9rem;
+            display:flex; align-items:center; gap:4px }
+        .tool.on { background:#4361ee; color:#fff; border-color:#4361ee }
+        #rev { width:100%; min-height:140px; border:1px solid #dee2e6; border-radius:8px;
+            padding:12px; font-size:.95rem; line-height:1.6; resize:vertical }
+        .preview { border:1px solid #dee2e6; border-radius:8px; padding:12px;
+            background:#fff; margin-top:10px; min-height:140px; overflow:visible }
+        .preview ol, .preview ul { list-style-position:inside; padding-left:0; margin:.4em 0 }
+        .preview li { margin:.2em 0 }
+
+        .export-btn { display:block; width:100%; margin-top:48px; text-align:center;
+            padding:14px 0; font-weight:600; font-size:1rem;
+            background:#4361ee; color:#fff; border-radius:12px; text-decoration:none }
+
+        @media(max-width:600px){
+            header { flex-direction:column; gap:12px }
+            th, td { padding:10px }
+        }
+
+
+        /* ===== 手机竖屏响应式 （max-width 480px） ===== */
+        @media (max-width: 480px) {
+            /* 容器与间距 */
+            .container, .content, #capture {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto;
+                padding: 8px;
+            }
+
+            /* 头部导航收窄：横向滚动 */
+            header {
+                flex-wrap: wrap;
+                padding: 12px 8px !important;
+            }
+            nav {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                width: 100%;
+            }
+            nav a {
+                flex: none;
+                padding: 8px 6px !important;
+                font-size: 0.9rem;
+            }
+
+            /* 表单与按钮 */
+            form {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+            }
+            input, select, textarea, .btn, .tool, .btn-export {
+                font-size: 0.95rem !important;
+                padding: 8px 10px !important;
+            }
+
+            /* 表格字体与单元格 */
+            table, .table {
+                font-size: 0.85rem !important;
+            }
+            th, td {
+                padding: 6px 4px !important;
+            }
+
+            /* 卡片 / 仪表盘 */
+            .sum, .dashboardSec .sum {
+                grid-template-columns: 1fr !important;
+                gap: 6px !important;
+            }
+            .card {
+                padding: 10px !important;
+            }
+            .card .v {
+                font-size: 1.3rem !important;
+            }
+
+            /* 进度条微调 */
+            .pg {
+                height: 4px !important;
+            }
+
+            /* 复盘预览 */
+            .preview {
+                padding: 8px !important;
+                min-height: 100px !important;
+            }
+
+            /* 导出按钮 & 返回按钮 */
+            .btn-export, #btnShot, #exportBtn, .export-btn {
+                font-size: 0.95rem !important;
+                padding: 10px 0 !important;
+            }
+            .controls button, #btnBack {
+                font-size: 0.85rem !important;
+                padding: 6px 8px !important;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
 <div class="container">
     <header>
         <div class="logo"><i class="fas fa-star"></i> 行动评分系统</div>
         <nav>
-            <a href="index.html"  class="active">打分系统</a>
+            <a href="index.html" class="active">打分系统</a>
             <a href="note.html">闪电笔记</a>
             <a href="todo.html">代办清单</a>
             <a href="store.html">积分商店</a>
+            <a href="user.html">用户信息</a>
+            <a href="settings.html">设置</a>
         </nav>
         <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
-        <div class="date"><i class="fas fa-calendar-alt"></i><input type="date" id="picker"></div>
+        <div class="date"><i class="fas fa-calendar-alt"></i>
+            <input type="date" id="picker"/>
+        </div>
     </header>
 
     <div class="content">
+        <!-- 添加记录 -->
         <form id="f">
-            <input id="desc" placeholder="描述" required>
+            <input id="desc" placeholder="描述" required/>
             <select id="seg"><option>上午</option><option>下午</option><option>晚上</option></select>
-            <input id="score" type="number" min="0" max="20" placeholder="分数 0-20" required>
-            <input id="min"   type="number" min="0" placeholder="时长(分钟)" required>
+            <input id="score" type="number" min="0" max="20" placeholder="分数 0-20" required/>
+            <input id="min" type="number" min="0" placeholder="时长(分钟)" required/>
             <button class="btn">添加记录</button>
         </form>
 
-        <div class="table"><table>
-            <thead><tr><th>时间</th><th>描述</th><th>时间段</th><th>分数/20</th><th>时长/120</th><th>小计/80</th><th></th></tr></thead>
-            <tbody id="tb"></tbody>
-        </table></div>
+        <!-- 记录表格 -->
+        <div class="table">
+            <table>
+                <thead>
+                <tr>
+                    <th>时间</th><th>描述</th><th>时间段</th>
+                    <th>分数/20</th><th>时长/120</th><th>小计/80</th><th></th>
+                </tr>
+                </thead>
+                <tbody id="tb"></tbody>
+            </table>
+        </div>
 
+        <!-- 汇总卡 -->
         <div class="sum" id="sum"></div>
 
         <!-- 当日复盘 -->
         <div class="review">
             <h3><i class="fas fa-book"></i> 当日复盘</h3>
-            <textarea id="rev" placeholder="写下今天的总结、反思与收获…"></textarea>
+            <div class="rev-toolbar">
+                <button id="btn-view" class="tool on"><i class="fas fa-eye"></i> 预览</button>
+                <button id="btn-edit" class="tool"><i class="fas fa-pen"></i> 编辑</button>
+                <label for="media" class="tool"><i class="fas fa-paperclip"></i> 上传</label>
+                <input type="file" id="media" multiple accept="image/*,audio/*" hidden/>
+            </div>
+            <textarea id="rev" placeholder="Markdown 撰写区…"></textarea>
+            <div id="preview" class="preview"></div>
         </div>
     </div>
+    <!-- 导出今天长图 -->
+    <a href="export.html" class="export-btn">📸 导出日度长图</a>
 </div>
 
+
+
 <script>
-    if(!localStorage.currentUser) location.href='login.html';
-    const user=localStorage.currentUser,$=id=>document.getElementById(id),
-        calc=(s,m)=>(s/30)*m,pg=(v,m)=>`<div class="pg"><div style="width:${Math.min(v,m)/m*100}%"></div></div>`;
-    let data={items:[],reviews:{}},curDate=new Date().toISOString().slice(0,10);
-    $('picker').value=curDate;
+    // 登录检查 & 初始化
+    if (!localStorage.currentUser) location.href = 'login.html';
+    const user = localStorage.currentUser;
+    const picker = document.getElementById('picker');
+    picker.value = new Date().toISOString().slice(0,10);
+    let curDate = picker.value;
+    picker.addEventListener('change', () => {
+        curDate = picker.value;
+        onDateChange();
+    });
 
-    /* ---- 网络 ---- */
-    async function load(){
-        const raw=await fetch(`/api/tasks/${user}`).then(r=>r.json());
-        data=Array.isArray(raw)?{items:raw,reviews:{}}:raw;   // 向后兼容
-        render();updateWal();
+    // DOM 引用
+    const tb      = document.getElementById('tb');
+    const sum     = document.getElementById('sum');
+    const form    = document.getElementById('f');
+    const revTA   = document.getElementById('rev');
+    const preview = document.getElementById('preview');
+    const btnView = document.getElementById('btn-view');
+    const btnEdit = document.getElementById('btn-edit');
+    const mediaIn = document.getElementById('media');
+
+    // 工具函数
+    const pg   = (v,m) => `<div class="pg"><div style="width:${Math.min(v,m)/m*100}%"></div></div>`;
+    const calc = (s,m) => s/30*m;
+
+    // 存储结构
+    let tasks = { items:[], reviews:{} };
+
+    // 加载/保存
+    async function loadTasks() {
+        tasks = await fetch(`/api/tasks/${user}`)
+            .then(r => r.json())
+            .catch(() => ({ items:[], reviews:{} }));
+        onDateChange();
     }
-    function save(){
-        return fetch(`/api/tasks/${user}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    function saveTasks() {
+        return fetch(`/api/tasks/${user}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(tasks)
+        });
     }
 
-    /* ---- 渲染 ---- */
-    function render(){
-        const daily=data.items.filter(t=>t.date.slice(0,10)===curDate);
-        $('tb').innerHTML=daily.map((t,i)=>{const sub=calc(t.score,t.minutes);return `<tr>
-    <td>${new Date(t.date).toLocaleString()}</td><td>${t.desc}</td><td>${t.seg}</td>
-    <td>${t.score}${pg(t.score,20)}</td><td>${t.minutes}${pg(t.minutes,120)}</td>
-    <td>${sub.toFixed(2)}${pg(sub,80)}</td>
-    <td><button class="del" data-i="${i}"><i class="fas fa-trash"></i></button></td></tr>`}).join('');
-        const mins=daily.reduce((s,t)=>s+t.minutes,0),tot=daily.reduce((s,t)=>s+calc(t.score,t.minutes),0);
-        $('sum').innerHTML=card('记录',daily.length,20)+card('总时长 /720',mins,720)+card('总分 /480',tot.toFixed(2),480);
-        $('rev').value=data.reviews[curDate]||'';
-    }
-    const card=(l,v,m)=>`<div class="card"><h4>${l}</h4><div class="v">${v}</div>${pg(v,m)}</div>`;
-
-    /* ---- 余额 ---- */
-    async function updateWal(){
-        const store=await fetch(`/api/store/${user}`).then(r=>r.json());
-        const earned=Math.floor(data.items.reduce((s,t)=>s+calc(t.score,t.minutes),0));
-        const spent =store.history.reduce((s,h)=>s+h.price,0);
-        $('wal').textContent=earned-spent;
+    // 切换日期后重渲染
+    function onDateChange() {
+        renderTable();
+        renderSummary(tasks.items.filter(t => t.date.slice(0,10) === curDate));
+        updateWallet();
+        loadReview();
     }
 
-    /* ---- 事件 ---- */
-    $('f').onsubmit=async e=>{
+    // 渲染表格：完整日期+时间
+    function renderTable() {
+        tb.innerHTML = '';
+        tasks.items
+            .filter(t => t.date.slice(0,10) === curDate)
+            .forEach((t,i) => {
+                const idx = tasks.items.indexOf(t);
+                const sub = calc(t.score, t.minutes).toFixed(2);
+                const tm  = new Date(t.date).toLocaleString();
+                const tr  = document.createElement('tr');
+                tr.innerHTML = `
+            <td>${tm}</td>
+            <td>${t.desc}</td>
+            <td>${t.seg}</td>
+            <td>${t.score}${pg(t.score,20)}</td>
+            <td>${t.minutes}${pg(t.minutes,120)}</td>
+            <td>${sub}${pg(parseFloat(sub),80)}</td>
+            <td><button class="del" data-i="${idx}"><i class="fas fa-trash"></i></button></td>`;
+                tb.appendChild(tr);
+            });
+    }
+
+    // 渲染汇总卡片
+    function renderSummary(rows) {
+        const mins = rows.reduce((s,t)=>s+t.minutes,0);
+        const pts  = rows.reduce((s,t)=>s+calc(t.score,t.minutes),0).toFixed(1);
+        const card = (l,v,m) =>
+            `<div class="card"><h4>${l}</h4><div class="v">${v}</div>${pg(v,m)}</div>`;
+        sum.innerHTML =
+            card('记录数', rows.length,     20) +
+            card('总时长 /720', mins,       720) +
+            card('总积分 /480', pts,        480);
+    }
+
+    // 更新顶栏积分余额
+    async function updateWallet(){
+        const hist = await fetch(`/api/store/${user}`)
+            .then(r=>r.json()).catch(()=>({history:[]})).then(d=>d.history);
+
+        // 统计所有任务的积分，不再按 curDate 过滤
+        const earned = tasks.items
+            .reduce((s,t) => s + (t.score / 30 * t.minutes), 0);
+
+        const spent  = hist.reduce((s,h) => s + h.price, 0);
+        document.getElementById('wal').textContent = Math.floor(earned - spent);
+    }
+
+    // 添加记录：存完整 ISO 时间
+    form.onsubmit = async e => {
         e.preventDefault();
-        data.items.push({desc:$('desc').value.trim(),seg:$('seg').value,score:+$('score').value,minutes:+$('min').value,date:new Date().toISOString()});
-        render();$('f').reset();await save();updateWal();
-    };
-    $('tb').onclick=async e=>{
-        const btn=e.target.closest('.del');if(!btn)return;
-        const daily=data.items.filter(t=>t.date.slice(0,10)===curDate);
-        data.items=data.items.filter(t=>t!==daily[+btn.dataset.i]);render();await save();updateWal();
-    };
-    $('picker').onchange=e=>{curDate=e.target.value;render();};
-    $('rev').onchange=async e=>{
-        data.reviews[curDate]=e.target.value.trim();await save();
+        tasks.items.push({
+            desc:    form.desc.value.trim(),
+            seg:     form.seg.value,
+            score:  +form.score.value,
+            minutes:+form.min.value,
+            date:    new Date().toISOString()
+        });
+        await saveTasks();
+        form.reset();
+        onDateChange();
     };
 
-    /* ---- 启动 ---- */
-    load();
+    // 删除记录
+    tb.onclick = async e => {
+        const btn = e.target.closest('button.del');
+        if (!btn) return;
+        tasks.items.splice(+btn.dataset.i, 1);
+        await saveTasks();
+        onDateChange();
+    };
+
+    // === 复盘编辑器 ===
+    function autoResize(){
+        revTA.style.height = 'auto';
+        revTA.style.height = revTA.scrollHeight + 'px';
+    }
+    function updatePreview(){
+        preview.innerHTML = marked.parse(revTA.value || '');
+    }
+    btnView.onclick = ()=>{
+        btnView.classList.add('on');
+        btnEdit.classList.remove('on');
+        preview.style.display = '';
+        updatePreview();
+    };
+    btnEdit.onclick = ()=>{
+        btnEdit.classList.add('on');
+        btnView.classList.remove('on');
+        preview.style.display = 'none';
+        revTA.focus();
+    };
+    mediaIn.onchange = async e => {
+        if (!e.target.files.length) return;
+        const fd = new FormData();
+        [...e.target.files].forEach(f=>fd.append('files',f));
+        const { urls } = await fetch('/api/upload',{method:'POST',body:fd}).then(r=>r.json());
+        urls.forEach(u=>{
+            const isImg = /\.(png|jpe?g|gif|svg)$/i.test(u);
+            revTA.value += `\n\n${isImg?`![图片](${u})`:`<audio controls src="${u}"></audio>`}\n`;
+        });
+        autoResize();
+        if (btnView.classList.contains('on')) updatePreview();
+        e.target.value = '';
+    };
+    let saveTimer;
+    revTA.oninput = ()=>{
+        autoResize();
+        if (btnView.classList.contains('on')) updatePreview();
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async()=>{
+            tasks.reviews ||= {};
+            tasks.reviews[curDate] = revTA.value;
+            await saveTasks();
+        },300);
+    };
+    function loadReview(){
+        revTA.value = tasks.reviews?.[curDate] || '';
+        autoResize();
+        updatePreview();
+    }
+
+    // 启动
+    loadTasks();
 </script>
-</body></html>
+</body>
+</html>
