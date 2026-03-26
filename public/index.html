@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>行动评分系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--p:#4361ee;--s:#3f37c9;--g:#4cc9f0;--a:#f72585;--b:#dee2e6;--bg:#f5f7fa;--bg2:#c3cfe2;--w:#fff;--gray:#6c757d}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
+        body{min-height:100vh;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:24px}
+        .container{max-width:1200px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);overflow:hidden}
+        header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 32px;background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
+        .logo{display:flex;align-items:center;gap:8px;font-size:1.6rem;font-weight:600}
+        nav a{color:#fff;text-decoration:none;margin:0 12px;opacity:.85}nav a.active,nav a:hover{opacity:1}
+        .wallet{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:50px;font-weight:600}
+        .date{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:6px 12px;border-radius:8px}
+        .date input{background:transparent;border:none;color:#fff;cursor:pointer}input::-webkit-calendar-picker-indicator{filter:invert(1)}
+        .content{padding:32px}
+        form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
+        input,select{padding:10px;border:1px solid var(--b);border-radius:8px;font-size:1rem}
+        .btn{grid-column:1/-1;padding:11px;border:none;border-radius:10px;font-weight:600;background:var(--p);color:#fff;cursor:pointer}
+        .table{overflow-x:auto;border:1px solid var(--b);border-radius:12px;margin-bottom:24px}
+        table{width:100%;border-collapse:collapse}thead{background:var(--bg)}
+        th,td{padding:14px 18px;text-align:right}th:first-child,td:first-child{text-align:left}
+        tr:nth-child(even){background:rgba(0,0,0,.03)}tr:hover{background:rgba(76,201,240,.08)}
+        .del{border:none;background:none;color:var(--a);cursor:pointer}
+        .pg{margin-top:4px;width:100%;height:6px;background:var(--b);border-radius:3px;overflow:hidden}.pg>div{height:100%;background:linear-gradient(90deg,var(--g),var(--p))}
+        .sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+        .card{background:var(--w);border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.05);padding:18px;text-align:center}
+        .card h4{font-size:.9rem;color:var(--gray);margin-bottom:6px}.card .v{font-size:1.8rem;font-weight:700}
+        /* 复盘 */
+        .review{background:#fff9e6;border-left:4px solid #ffc107;padding:20px;border-radius:10px}
+        .review h3{display:flex;align-items:center;gap:8px;color:#ff9800;margin-bottom:12px;font-size:1.1rem}
+        textarea{width:100%;min-height:120px;padding:14px;border:1px solid #ffe69c;border-radius:8px;font-size:1rem;resize:vertical}
+        @media(max-width:600px){header{flex-direction:column;gap:12px}th,td{padding:10px}}
+    </style></head><body>
+<div class="container">
+    <header>
+        <div class="logo"><i class="fas fa-star"></i> 行动评分系统</div>
+        <nav><a href="index.html" class="active">打分系统</a><a href="store.html">积分商店</a></nav>
+        <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
+        <div class="date"><i class="fas fa-calendar-alt"></i><input type="date" id="picker"></div>
+    </header>
+
+    <div class="content">
+        <form id="f">
+            <input id="desc" placeholder="描述" required>
+            <select id="seg"><option>上午</option><option>下午</option><option>晚上</option></select>
+            <input id="score" type="number" min="0" max="20" placeholder="分数 0-20" required>
+            <input id="min"   type="number" min="0" placeholder="时长(分钟)" required>
+            <button class="btn">添加记录</button>
+        </form>
+
+        <div class="table"><table>
+            <thead><tr><th>时间</th><th>描述</th><th>时间段</th><th>分数/20</th><th>时长/120</th><th>小计/80</th><th></th></tr></thead>
+            <tbody id="tb"></tbody>
+        </table></div>
+
+        <div class="sum" id="sum"></div>
+
+        <!-- 当日复盘 -->
+        <div class="review">
+            <h3><i class="fas fa-book"></i> 当日复盘</h3>
+            <textarea id="rev" placeholder="写下今天的总结、反思与收获…"></textarea>
+        </div>
+    </div>
+</div>
+
+<script>
+    if(!localStorage.currentUser) location.href='login.html';
+    const user=localStorage.currentUser,$=id=>document.getElementById(id),
+        calc=(s,m)=>(s/30)*m,pg=(v,m)=>`<div class="pg"><div style="width:${Math.min(v,m)/m*100}%"></div></div>`;
+    let data={items:[],reviews:{}},curDate=new Date().toISOString().slice(0,10);
+    $('picker').value=curDate;
+
+    /* ---- 网络 ---- */
+    async function load(){
+        const raw=await fetch(`/api/tasks/${user}`).then(r=>r.json());
+        data=Array.isArray(raw)?{items:raw,reviews:{}}:raw;   // 向后兼容
+        render();updateWal();
+    }
+    function save(){
+        return fetch(`/api/tasks/${user}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }
+
+    /* ---- 渲染 ---- */
+    function render(){
+        const daily=data.items.filter(t=>t.date.slice(0,10)===curDate);
+        $('tb').innerHTML=daily.map((t,i)=>{const sub=calc(t.score,t.minutes);return `<tr>
+    <td>${new Date(t.date).toLocaleString()}</td><td>${t.desc}</td><td>${t.seg}</td>
+    <td>${t.score}${pg(t.score,20)}</td><td>${t.minutes}${pg(t.minutes,120)}</td>
+    <td>${sub.toFixed(2)}${pg(sub,80)}</td>
+    <td><button class="del" data-i="${i}"><i class="fas fa-trash"></i></button></td></tr>`}).join('');
+        const mins=daily.reduce((s,t)=>s+t.minutes,0),tot=daily.reduce((s,t)=>s+calc(t.score,t.minutes),0);
+        $('sum').innerHTML=card('记录',daily.length,20)+card('总时长 /720',mins,720)+card('总分 /480',tot.toFixed(2),480);
+        $('rev').value=data.reviews[curDate]||'';
+    }
+    const card=(l,v,m)=>`<div class="card"><h4>${l}</h4><div class="v">${v}</div>${pg(v,m)}</div>`;
+
+    /* ---- 余额 ---- */
+    async function updateWal(){
+        const store=await fetch(`/api/store/${user}`).then(r=>r.json());
+        const earned=Math.floor(data.items.reduce((s,t)=>s+calc(t.score,t.minutes),0));
+        const spent =store.history.reduce((s,h)=>s+h.price,0);
+        $('wal').textContent=earned-spent;
+    }
+
+    /* ---- 事件 ---- */
+    $('f').onsubmit=async e=>{
+        e.preventDefault();
+        data.items.push({desc:$('desc').value.trim(),seg:$('seg').value,score:+$('score').value,minutes:+$('min').value,date:new Date().toISOString()});
+        render();$('f').reset();await save();updateWal();
+    };
+    $('tb').onclick=async e=>{
+        const btn=e.target.closest('.del');if(!btn)return;
+        const daily=data.items.filter(t=>t.date.slice(0,10)===curDate);
+        data.items=data.items.filter(t=>t!==daily[+btn.dataset.i]);render();await save();updateWal();
+    };
+    $('picker').onchange=e=>{curDate=e.target.value;render();};
+    $('rev').onchange=async e=>{
+        data.reviews[curDate]=e.target.value.trim();await save();
+    };
+
+    /* ---- 启动 ---- */
+    load();
+</script>
+</body></html>
