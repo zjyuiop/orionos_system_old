@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>今日事件查看</title>
+  <style>
+    :root{
+      --primary:#6366f1;--secondary:#8b5cf6;--white:#fff;--light:#f8f9ff;--dark:#111827;--gray:#6b7280;
+      --muted:#f3f4f6;--danger:#ef4444;--radius:16px;--shadow:0 10px 20px rgba(0,0,0,.08);--tr:all .25s ease;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,system-ui;background:transparent;color:var(--dark)}
+    .wrap{max-width:1000px;margin:20px auto;padding:20px}
+    .top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+    h1{font-size:18px}
+    .wallet{background:var(--white);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+    .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .k h4{font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+    .k .v{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    table{width:100%;border-collapse:collapse;background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+    th,td{padding:14px 16px;border-bottom:1px solid #eef2f7;font-size:14px;vertical-align:top}
+    thead th{background:#f6f7ff;font-weight:700}
+    tbody tr:hover{background:#fafaff}
+    .chip{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;display:inline-block}
+    .chip.am{background:#10b98120;color:#047857}
+    .chip.pm{background:#f59e0b20;color:#b45309}
+    .chip.ni{background:#8b5cf620;color:#6d28d9}
+    .prog{height:8px;background:#eef2f7;border-radius:8px;overflow:hidden;margin-top:6px}
+    .fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));width:0;transition:width .6s ease}
+    .del{border:none;background:transparent;color:var(--danger);cursor:pointer;font-weight:700}
+    .empty{padding:40px;text-align:center;color:var(--gray);background:var(--white);border-radius:16px;box-shadow:var(--shadow)}
+    .guard{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none}
+    @media (max-width:720px){.grid{grid-template-columns:1fr} th:nth-child(3),td:nth-child(3){display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="guard" class="guard">未检测到 <code>localStorage.currentUser</code>。请先在主站登录后再使用此页。</div>
+
+    <div class="top">
+      <h1>今日事件查看</h1>
+      <div class="wallet">余额：<span id="wal">0</span></div>
+    </div>
+
+    <div class="grid">
+      <div class="card k"><h4>记录数</h4><div class="v" id="k-count">0</div><div class="prog"><div class="fill" id="p-count"></div></div></div>
+      <div class="card k"><h4>总时长 /720</h4><div class="v" id="k-mins">0</div><div class="prog"><div class="fill" id="p-mins"></div></div></div>
+      <div class="card k"><h4>总积分 /480</h4><div class="v" id="k-pts">0</div><div class="prog"><div class="fill" id="p-pts"></div></div></div>
+    </div>
+
+    <div class="table">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:90px">时间</th>
+            <th>描述</th>
+            <th style="width:80px">时段</th>
+            <th style="width:120px">分数</th>
+            <th style="width:140px">时长</th>
+            <th style="width:120px">积分</th>
+            <th style="width:70px">操作</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+
+    <div id="empty" class="empty" style="display:none">
+      暂无今日记录，去“添加记录（今天）”页面试试吧。
+    </div>
+  </div>
+
+<script>
+  // 工具
+  const toLocalYMD = (d)=>{const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;}
+  const fmtHM = (d)=> new Date(d).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+  const calc = (s,m)=> s/30*m;
+  const today = toLocalYMD(new Date());
+  const clampPct = (v,max)=>`${Math.min((v/max)*100,100)}%`;
+
+  // DOM
+  const guard=document.getElementById('guard');
+  const tb=document.getElementById('tb');
+  const empty=document.getElementById('empty');
+  const kCount=document.getElementById('k-count'), pCount=document.getElementById('p-count');
+  const kMins=document.getElementById('k-mins'), pMins=document.getElementById('p-mins');
+  const kPts=document.getElementById('k-pts'), pPts=document.getElementById('p-pts');
+  const wal=document.getElementById('wal');
+
+  // 用户
+  const user=localStorage.currentUser||'';
+  if(!user){ guard.style.display='block'; }
+
+  // 数据
+  let tasks={items:[],reviews:{}};
+  async function loadTasks(){
+    if(!user) return;
+    try{
+      tasks = await fetch(`/api/tasks/${user}`).then(r=>r.json());
+      render();
+      updateWallet();
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  async function saveTasks(){
+    if(!user) return;
+    await fetch(`/api/tasks/${user}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(tasks)
+    });
+  }
+
+  async function updateWallet(){
+    try{
+      const hist = await fetch(`/api/store/${user}`).then(r=>r.json()).then(d=>d.history||[]);
+      const earned = tasks.items.reduce((s,t)=> s + calc(t.score,t.minutes), 0);
+      const spent = hist.reduce((s,h)=> s + h.price, 0);
+      wal.textContent = Math.floor(earned - spent);
+    }catch(e){ wal.textContent='0'; }
+  }
+
+  function render(){
+    const rows = tasks.items.filter(t=> toLocalYMD(t.date)===today);
+    tb.innerHTML='';
+    if(rows.length===0){
+      empty.style.display='block';
+    }else{
+      empty.style.display='none';
+    }
+
+    rows.forEach((t)=>{
+      const idx = tasks.items.indexOf(t);
+      const sub = calc(t.score,t.minutes);
+      const seg = t.seg==='上午'?'am':(t.seg==='下午'?'pm':'ni');
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${fmtHM(t.date)}</td>
+        <td><strong>${escapeHtml(t.desc)}</strong></td>
+        <td><span class="chip ${seg}">${t.seg||''}</span></td>
+        <td>${t.score}<div class="prog"><div class="fill" style="width:${clampPct(t.score,20)}"></div></div></td>
+        <td>${t.minutes} 分钟<div class="prog"><div class="fill" style="width:${clampPct(t.minutes,120)}"></div></div></td>
+        <td><strong style="color:var(--primary)">${sub.toFixed(2)}</strong>
+            <div class="prog"><div class="fill" style="width:${clampPct(sub,80)}"></div></div></td>
+        <td><button class="del" data-i="${idx}">删除</button></td>`;
+      tb.appendChild(tr);
+    });
+
+    // 汇总
+    const mins = rows.reduce((s,t)=>s+t.minutes,0);
+    const pts = rows.reduce((s,t)=>s+calc(t.score,t.minutes),0);
+    kCount.textContent = rows.length;
+    kMins.textContent = mins;
+    kPts.textContent = pts.toFixed(1);
+    pCount.style.width = clampPct(rows.length,20);
+    pMins.style.width  = clampPct(mins,720);
+    pPts.style.width   = clampPct(pts,480);
+  }
+
+  // 防 XSS 的简易转义
+  function escapeHtml(s){return (s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
+
+  // 删除
+  document.addEventListener('click', async (e)=>{
+    const btn=e.target.closest('.del');
+    if(!btn) return;
+    if(!confirm('确定删除这条记录吗？')) return;
+    const i=+btn.dataset.i;
+    tasks.items.splice(i,1);
+    await saveTasks();
+    render();
+  });
+
+  // 初始化
+  loadTasks();
+  // 容错轮询
+  setInterval(loadTasks, 5000);
+
+  // 监听“添加页”广播
+  if('BroadcastChannel' in window){
+    const bc = new BroadcastChannel('lpt-tasks');
+    bc.onmessage = (ev)=>{
+      if(ev.data && ev.data.type==='tasksUpdated' && ev.data.user===user){
+        loadTasks();
+      }
+    };
+  }
+</script>
+</body>
+</html>
