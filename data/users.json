@@ -31,13 +31,26 @@
   },
   "CQMY": {
     "hash": "$2a$10$hT.K3xj01OQ8yaYDQT.dFOPxW40hv0FjonB3mvOyuh8fqcvVSyR1q",
-    "avatar": "/uploads/8aada5eda3e4fe7bcc93dc3182d67344.png"
+    "avatar": "/uploads/c1452c8e58f824747afd671fe89245ec.jpeg",
+    "nickname": "常青de绵阳",
+    "gender": "male",
+    "birthday": "2006-09-10",
+    "location": "江苏盐城东台",
+    "signature": "自律者，得自由！",
+    "wechat": "ChangqingMY"
   },
   "白熊": {
     "hash": "$2a$10$SywCGA3MQoWpY7oKMeD8sOL9Emv0mGYotrWKQ6EtZWCEf46yWUZpe"
   },
   "Awakening": {
-    "hash": "$2a$10$ANnpA4IFMNNVLQWvEl00M.wMbaGVGtst4H.stk0fa0XeJalA.6UIG"
+    "hash": "$2a$10$ANnpA4IFMNNVLQWvEl00M.wMbaGVGtst4H.stk0fa0XeJalA.6UIG",
+    "nickname": "Awakening",
+    "gender": "female",
+    "birthday": "2007-04-14",
+    "location": "",
+    "signature": "要生命的繁荣和不死的浪漫！",
+    "wechat": "Limited_gentleness",
+    "avatar": "/uploads/be86e67f8996ffe196ee49b5da90fc53.jpg"
   },
   "lsw": {
     "hash": "$2a$10$ca0nN5pQNxh1LGuT8D2Wu.ZTrxg8oIsylEvLSpF0nRRO8Lx/a8pLa"
@@ -115,6 +128,61 @@
     "hash": "$2a$10$2P3az743Bibj0bTdf/jylO5R/XFjndNE3fyDxNs7Rlni/0gDb4PmW"
   },
   "Amnesia": {
-    "hash": "$2a$10$ixzd0Ab3aScOi86k8kWRmO0NatQm0IwfZ/qnam5RAzdswAWQTN6F2"
+    "hash": "$2a$10$ixzd0Ab3aScOi86k8kWRmO0NatQm0IwfZ/qnam5RAzdswAWQTN6F2",
+    "avatar": "/uploads/c1bd734927f04e625cc098921856c04f.jpg",
+    "nickname": "Amnesia",
+    "gender": "female",
+    "birthday": "2007-06-30",
+    "location": "江苏省/盐城市/建湖县",
+    "signature": "追求独立自由",
+    "wechat": "yjw13770223067"
+  },
+  "绵阳哥俺来看看哇😘😘": {
+    "hash": "$2a$10$g5/hC2uoNLKmIwQOjMPdxujd7FD/LZ9LPl5Q8U5p1Lrif8zKlQDYy"
+  },
+  "+7": {
+    "hash": "$2a$10$stRaaq7SYBpDD/z/kkVFc.VMn2lNQA8qREhCCJmnppZUAoVKQilRO"
+  },
+  "何佳坤": {
+    "hash": "$2a$10$R/LEnTpgMuLScS9nlXigQOyDwm5H/MGHguIbG6XC2lr.mrh2aP.1O"
+  },
+  "小怪物": {
+    "hash": "$2a$10$h/9EMREpLhJ4mOWuqLElNeHFLVxsBZbCbCphAUdrN8eZMg5k1WOUu"
+  },
+  "kajdyXu | 徐行": {
+    "hash": "$2a$10$VFTHfMST6KYhU2PvaVHbS.74xObSNzO8P3HPFMNntJGxyzA.hMx3m"
+  },
+  "徐行": {
+    "hash": "$2a$10$15MtvzbKc.AMu/p230Clf.u8MC/wAYDgWNRg.FJyYc705Epk0ghCK"
+  },
+  "不上中大不改名": {
+    "hash": "$2a$10$l7TTLaJNVg84s4fDlPGNyeogVrZHuTVty4FwpBXWK17oT7LpKw6IS"
+  },
+  "吴好": {
+    "hash": "$2a$10$nNUOpPjkorWuNK97pL.Sfeaknnub./omcfCzEdDwIYEsJVpIPnvEK"
+  },
+  "Usiku": {
+    "hash": "$2a$10$VaOwDzsF4ASZQQ2mm0nkf.lurz17oHE5gkHJb9VFxd1HebZn0J0IO"
+  },
+  "思无邪": {
+    "hash": "$2a$10$N8ZQWr4q80GANkpMoye91eYpgkyE1I5oJDSBU/kA/5.ZO34ZYDcN6"
+  },
+  "张锦阳": {
+    "hash": "$2a$10$IdIia2NG17FZL24ctJBHrOC3guVEjZDOEvHz213tVs2953.UOytJm"
+  },
+  "🏷你好啊 我是①·12413524356532🤩🤩🤩🤩🤩🤩🤩": {
+    "hash": "$2a$10$l1c.c2dE2CUDcu6/DMnkXearEGo8OXf4yxRMW2y5gH0v0YCLu7JOK"
+  },
+  "17371915071": {
+    "hash": "$2a$10$D1PRdw7.YLOWOdsYbVD55egLi9jUTnM8U3E3a.e/uk/uvGmRUmf2C"
+  },
+  "Kayla": {
+    "hash": "$2a$10$TuanaQKafUmWmQEhxWt1qu7/PPTA62CXnKtelJC0KxAgB.KCCl2B."
+  },
+  "芦小苇": {
+    "hash": "$2a$10$XKOqhJ62I/5LHPVoEf2Lm.BaI1MXue3KFO98o1AyqsgOCnIUhFBbK"
+  },
+  "橙": {
+    "hash": "$2a$10$RmWwNOCA2nJgEo75WDA29uKVEuMdnHZnhmKN.Jo7K.ATb2ePr67qG"
   }
 }

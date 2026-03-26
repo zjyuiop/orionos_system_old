@@ -11,76 +11,604 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
     <style>
-        :root { --p: #4361ee; --s: #3f37c9; --b: #dee2e6; --w: #fff; --gray: #6c757d; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:"Segoe UI",sans-serif; }
-        body { background:#f5f7fa; padding:12px; }
-        .container {
-            width:100%; max-width:360px; margin:0 auto;
-            background:var(--w); border-radius:16px;
-            box-shadow:0 6px 18px rgba(0,0,0,.06); overflow:hidden;
+        /* 现代化配色方案 */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(125deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 导出容器 - 白色背景用于截图 */
+        #capture {
+            background: var(--white);
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 优雅的头部 */
         header {
-            display:flex; align-items:center; justify-content:space-between;
-            background:linear-gradient(90deg,var(--p),var(--s)); color:#fff;
-            padding:14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
         }
-        header h1 { font-size:1.3rem; display:flex; align-items:center; gap:6px; }
-        .controls { display:flex; align-items:center; gap:8px; }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(35deg);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 i {
+            font-size: 1.3rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
         .controls input[type="date"] {
-            background:transparent; border:none; color:#fff;
-            font-size:0.9rem; cursor:pointer;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
         }
+
+        .controls input[type="date"]:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .controls input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: brightness(0) invert(1);
+            cursor: pointer;
+        }
+
         .controls button {
-            background:rgba(255,255,255,.2); border:none; color:#fff;
-            padding:6px 10px; border-radius:4px; cursor:pointer;
-            font-size:0.85rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: var(--white);
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        /* 个人信息 */
+
+        .controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 个人信息卡片 */
         .profile {
-            display:flex; align-items:center; gap:12px;
-            padding:12px 16px; background:rgba(67,97,238,.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f0ff 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+            overflow: hidden;
         }
+
+        .profile::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 150%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+        }
+
         .profile img {
-            width:56px; height:56px; border-radius:50%; object-fit:cover;
-            border:2px solid var(--p);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            position: relative;
+            z-index: 1;
         }
-        .userinfo { display:flex; flex-direction:column; }
-        .userinfo .name { font-size:1rem; font-weight:600; color:var(--p); }
-        .userinfo .meta { font-size:0.8rem; color:var(--gray); }
 
-        section { padding:16px; border-bottom:1px solid var(--b); }
-        section:last-of-type { border-bottom:none; }
+        .userinfo {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .userinfo .name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .userinfo .meta {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* 内容区块 */
+        section {
+            padding: 24px;
+            border-bottom: 1px solid var(--light-gray);
+            position: relative;
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
         section h2 {
-            font-size:1.1rem; display:flex; align-items:center; gap:6px;
-            margin-bottom:10px;
+            font-size: 1.2rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            font-weight: 600;
         }
-        /* 仪表盘 */
-        .sum { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin-bottom:12px; }
-        .card { background:var(--w); border-radius:10px;
-            box-shadow:0 3px 10px rgba(0,0,0,.05);
-            padding:12px; text-align:center;
-        }
-        .card h4 { font-size:0.8rem; color:var(--gray); margin-bottom:4px; }
-        .card .v { font-size:1.4rem; font-weight:700; }
 
-        /* 表格 */
-        table { width:100%; border-collapse:collapse; margin-bottom:12px; font-size:0.85rem; }
-        thead { background:var(--b); }
-        th,td { border:1px solid var(--b); padding:6px; text-align:center; }
-        th:first-child, td:first-child { text-align:left; }
-
-        /* 复盘 */
-        .preview { border:1px solid var(--b); border-radius:8px;
-            padding:10px; background:#fff; min-height:120px;
-            overflow:visible; white-space:normal; font-size:0.9rem;
+        section h2 i {
+            color: var(--primary);
+            font-size: 1rem;
         }
-        .preview ol, .preview ul { padding-left:1em; margin:0.3em 0; }
-        .preview li { margin:0.1em 0; }
+
+        /* 仪表盘卡片 */
+        .sum {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9ff 0%, var(--white) 100%);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .card h4 {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .card .v {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 美化表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f0ff 100%);
+        }
+
+        th {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+        }
+
+        th:first-child {
+            text-align: left;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--light-gray);
+            background: var(--white);
+        }
+
+        td:first-child {
+            text-align: left;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(248, 249, 255, 0.5);
+        }
+
+        /* 积分高亮 */
+        td:last-child {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* 复盘预览 */
+        .preview {
+            background: linear-gradient(135deg, #fefefe 0%, #fbfbff 100%);
+            border: 2px solid rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 120px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 60%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+            transform: rotate(45deg);
+        }
+
+        .preview > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .preview h1, .preview h2, .preview h3 {
+            color: var(--primary);
+            margin: 12px 0 8px 0;
+        }
+
+        .preview p {
+            margin-bottom: 8px;
+        }
+
+        .preview ul, .preview ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .preview li {
+            margin: 4px 0;
+        }
+
+        .preview code {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        .preview pre {
+            background: var(--dark);
+            color: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
+        .preview blockquote {
+            border-left: 3px solid var(--primary);
+            padding-left: 12px;
+            margin: 8px 0;
+            color: var(--gray);
+            font-style: italic;
+        }
 
         /* 导出按钮 */
-        .btn-export { display:block; width:100%; padding:14px 0;
-            font-size:1rem; font-weight:600; background:var(--p); color:#fff;
-            border:none; border-radius:0 0 8px 8px; cursor:pointer;
+        .btn-export {
+            display: block;
+            width: 100%;
+            padding: 18px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent) 0%, #d6336c 100%);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-export::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-50%) skewX(-30deg);
+            transition: left 0.5s;
+        }
+
+        .btn-export:hover::before {
+            left: 100%;
+        }
+
+        .btn-export:hover {
+            transform: scale(1.02);
+        }
+
+        .btn-export:active {
+            transform: scale(0.98);
+        }
+
+        .btn-export:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+
+        .btn-export i {
+            margin-right: 8px;
+        }
+
+        /* 空状态 */
+        .empty-message {
+            text-align: center;
+            color: var(--gray);
+            padding: 32px;
+            font-style: italic;
+        }
+
+        /* 加载动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            animation: fadeIn 0.5s ease-out backwards;
+        }
+
+        section:nth-child(2) { animation-delay: 0.1s; }
+        section:nth-child(3) { animation-delay: 0.2s; }
+        section:nth-child(4) { animation-delay: 0.3s; }
+        section:nth-child(5) { animation-delay: 0.4s; }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            #capture {
+                max-width: 100%;
+                border-radius: 16px;
+            }
+
+            header {
+                padding: 16px;
+            }
+
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            .controls {
+                gap: 8px;
+            }
+
+            .controls input[type="date"] {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+
+            .controls button {
+                padding: 6px 10px;
+            }
+
+            .profile {
+                padding: 16px;
+            }
+
+            .profile img {
+                width: 56px;
+                height: 56px;
+            }
+
+            .userinfo .name {
+                font-size: 1rem;
+            }
+
+            .userinfo .meta {
+                font-size: 0.85rem;
+            }
+
+            section {
+                padding: 20px;
+            }
+
+            section h2 {
+                font-size: 1.1rem;
+            }
+
+            .sum {
+                gap: 10px;
+            }
+
+            .card {
+                padding: 14px;
+            }
+
+            .card h4 {
+                font-size: 0.7rem;
+            }
+
+            .card .v {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .preview {
+                padding: 14px;
+                font-size: 0.9rem;
+            }
+
+            .btn-export {
+                padding: 16px 0;
+                font-size: 1rem;
+            }
+        }
+
+        /* 打印样式优化 */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            #capture {
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            .btn-export,
+            .controls button {
+                display: none;
+            }
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -91,34 +619,56 @@
         <h1><i class="fas fa-chart-pie"></i> 日度长图</h1>
         <div class="controls">
             <input type="date" id="exportDate" />
-            <button id="btnBack"><i class="fas fa-arrow-left"></i></button>
+            <button id="btnBack" title="返回主页">
+                <i class="fas fa-arrow-left"></i>
+            </button>
         </div>
     </header>
 
     <!-- 个人信息 -->
     <div class="profile">
-        <img id="avatar" src="/uploads/default-avatar.png" alt="头像" />
+        <img id="avatar" src="https://cdn.jsdelivr.net/gh/identicons/identicon-api@latest/svg?seed=default" alt="头像" />
         <div class="userinfo">
-            <div class="name" id="uname">用户</div>
-            <div class="meta" id="sig">暂无签名</div>
+            <div class="name" id="uname">加载中...</div>
+            <div class="meta" id="sig">正在获取签名...</div>
         </div>
     </div>
 
     <!-- 仪表盘 -->
     <section id="dashboardSec">
+        <h2><i class="fas fa-tachometer-alt"></i> 数据总览</h2>
         <div class="sum">
-            <div class="card"><h4>记录数</h4><div class="v" id="dash-count">–</div></div>
-            <div class="card"><h4>总时长(min)</h4><div class="v" id="dash-duration">–</div></div>
-            <div class="card"><h4>今日积分</h4><div class="v" id="dash-today-pts">–</div></div>
-            <div class="card"><h4>全局积分</h4><div class="v" id="dash-global-pts">–</div></div>
+            <div class="card">
+                <h4>记录数</h4>
+                <div class="v" id="dash-count">0</div>
+            </div>
+            <div class="card">
+                <h4>总时长</h4>
+                <div class="v" id="dash-duration">0</div>
+            </div>
+            <div class="card">
+                <h4>今日积分</h4>
+                <div class="v" id="dash-today-pts">0</div>
+            </div>
+            <div class="card">
+                <h4>累计积分</h4>
+                <div class="v" id="dash-global-pts">0</div>
+            </div>
         </div>
     </section>
 
     <!-- 打分系统 -->
     <section id="scoreSec">
-        <h2><i class="fas fa-star-half-alt"></i> 打分系统</h2>
+        <h2><i class="fas fa-star"></i> 任务详情</h2>
         <table id="scoreTable">
-            <thead><tr><th>任务</th><th>分数</th><th>时长</th><th>积分</th></tr></thead>
+            <thead>
+            <tr>
+                <th>任务描述</th>
+                <th>分数</th>
+                <th>时长</th>
+                <th>积分</th>
+            </tr>
+            </thead>
             <tbody></tbody>
         </table>
     </section>
@@ -126,80 +676,153 @@
     <!-- 当日复盘 -->
     <section id="reviewSec">
         <h2><i class="fas fa-book"></i> 当日复盘</h2>
-        <div id="revPrev" class="preview">加载中…</div>
+        <div id="revPrev" class="preview">
+            <p class="empty-message">正在加载复盘内容...</p>
+        </div>
     </section>
 
     <!-- 导出长图按钮 -->
-    <button id="btnShot" class="btn-export">📸 导出长图</button>
+    <button id="btnShot" class="btn-export">
+        <i class="fas fa-camera"></i> 导出长图
+    </button>
 </div>
 
 <script>
-    if (!localStorage.currentUser) location.href='login.html';
+    // 辅助函数：将 ISO 字符串转换成本地 YYYY-MM-DD
+    function toLocalYYYYMMDD(isoStr) {
+        const d = new Date(isoStr);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+
+    if (!localStorage.currentUser) location.href = 'login.html';
     const user = localStorage.currentUser;
     const exportDate = document.getElementById('exportDate');
-    const today = new Date().toISOString().slice(0,10);
+    const today = new Date().toISOString().slice(0, 10);
     exportDate.value = today;
 
     // 个人信息获取
     fetch(`/api/user/${user}`)
-        .then(r=>r.json())
-        .then(u=>{
+        .then(r => r.json())
+        .then(u => {
             document.getElementById('uname').textContent = u.nickname || user;
             document.getElementById('sig').textContent = u.signature || '暂无签名';
-            if(u.avatar) document.getElementById('avatar').src = u.avatar;
+            if (u.avatar) {
+                document.getElementById('avatar').src = u.avatar;
+            }
+        })
+        .catch(() => {
+            document.getElementById('uname').textContent = user;
+            document.getElementById('sig').textContent = '暂无签名';
         });
 
     // DOM refs
-    const tbody       = document.querySelector('#scoreTable tbody');
-    const revPrev     = document.getElementById('revPrev');
-    const btnShot     = document.getElementById('btnShot');
-    const btnBack     = document.getElementById('btnBack');
-    const dashCount   = document.getElementById('dash-count');
-    const dashDur     = document.getElementById('dash-duration');
-    const dashPtsDay  = document.getElementById('dash-today-pts');
-    const dashPtsAll  = document.getElementById('dash-global-pts');
+    const tbody = document.querySelector('#scoreTable tbody');
+    const revPrev = document.getElementById('revPrev');
+    const btnShot = document.getElementById('btnShot');
+    const btnBack = document.getElementById('btnBack');
+    const dashCount = document.getElementById('dash-count');
+    const dashDur = document.getElementById('dash-duration');
+    const dashPtsDay = document.getElementById('dash-today-pts');
+    const dashPtsAll = document.getElementById('dash-global-pts');
 
-    btnBack.onclick = () => location.href='index.html';
+    btnBack.onclick = () => location.href = 'index.html';
 
     async function renderExport() {
         const cur = exportDate.value;
-        const tasks = await fetch(`/api/tasks/${user}`).then(r=>r.json()).catch(()=>({items:[],reviews:{}}));
+        const tasks = await fetch(`/api/tasks/${user}`)
+            .then(r => r.json())
+            .catch(() => ({ items: [], reviews: {} }));
+
+        // 适配新旧数据格式
+        const allItems = tasks.items || [];
+        const reviews = tasks.reviews || {};
+
+        // 过滤当天数据 - 兼容新旧格式
+        const todayItems = allItems.filter(t => {
+            // 新格式：完整 ISO 字符串
+            if (t.date && t.date.includes('T')) {
+                return toLocalYYYYMMDD(t.date) === cur;
+            }
+            // 旧格式：YYYY-MM-DD
+            return t.date && t.date.slice(0, 10) === cur;
+        });
 
         // 仪表盘
-        const all = tasks.items;
-        const todayItems = all.filter(t=>t.date.slice(0,10)===cur);
-        dashCount.textContent  = todayItems.length;
-        dashDur.textContent    = todayItems.reduce((s,t)=>s+t.minutes,0);
-        dashPtsDay.textContent = todayItems.reduce((s,t)=>s+(t.score/30*t.minutes),0).toFixed(1);
-        dashPtsAll.textContent = all.reduce((s,t)=>s+(t.score/30*t.minutes),0).toFixed(1);
+        dashCount.textContent = todayItems.length;
+        const totalMinutes = todayItems.reduce((s, t) => s + (t.minutes || 0), 0);
+        dashDur.textContent = totalMinutes + ' 分钟';
+        dashPtsDay.textContent = todayItems.reduce((s, t) => s + ((t.score || 0) / 30 * (t.minutes || 0)), 0).toFixed(1);
+        dashPtsAll.textContent = allItems.reduce((s, t) => s + ((t.score || 0) / 30 * (t.minutes || 0)), 0).toFixed(1);
 
         // 打分表
         tbody.innerHTML = '';
-        todayItems.forEach(t=>{
-            const pts = (t.score/30*t.minutes).toFixed(1);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${t.desc||'-'}</td><td>${t.score!=null?t.score:'-'}</td><td>${t.minutes!=null?t.minutes:'-'}</td><td>${pts}</td>`;
-            tbody.appendChild(tr);
-        });
+        if (todayItems.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="empty-message">
+                        当天暂无任务记录
+                    </td>
+                </tr>
+            `;
+        } else {
+            todayItems.forEach(t => {
+                const pts = ((t.score || 0) / 30 * (t.minutes || 0)).toFixed(1);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${t.desc || '未命名任务'}</td>
+                    <td>${t.score != null ? t.score : '-'}</td>
+                    <td>${t.minutes != null ? t.minutes + ' 分钟' : '-'}</td>
+                    <td>${pts}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
         // 复盘
-        const md = tasks.reviews?.[cur];
-        if(md) {
+        const md = reviews[cur];
+        if (md && md.trim()) {
             const hasMd = /(^[#>*\-]|```|\[.+\]\(.+\))/m.test(md);
-            revPrev.innerHTML = hasMd ? marked.parse(md) : md.split('\n').map(l=>`<div>${l||'<br>'}</div>`).join('');
-        } else revPrev.textContent = '今天还没有写复盘';
+            if (hasMd) {
+                revPrev.innerHTML = marked.parse(md);
+            } else {
+                revPrev.innerHTML = md.split('\n').map(l => `<p>${l || '&nbsp;'}</p>`).join('');
+            }
+        } else {
+            revPrev.innerHTML = '<p class="empty-message">当天还没有写复盘</p>';
+        }
     }
 
     exportDate.addEventListener('change', renderExport);
     renderExport();
 
-    btnShot.onclick = async ()=>{
+    btnShot.onclick = async () => {
         btnShot.disabled = true;
-        btnShot.textContent = '生成中…';
-        const canvas = await html2canvas(document.getElementById('capture'),{backgroundColor:'#ffffff',scale: window.devicePixelRatio||2});
-        const url = canvas.toDataURL('image/png');
-        const a = document.createElement('a');a.href = url;a.download = `${exportDate.value}-日度长图.png`;a.click();
-        btnShot.disabled = false;btnShot.textContent = '📸 导出长图';
+        btnShot.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+
+        try {
+            const canvas = await html2canvas(document.getElementById('capture'), {
+                backgroundColor: '#ffffff',
+                scale: window.devicePixelRatio || 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            });
+
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${exportDate.value}-日度长图.png`;
+            a.click();
+        } catch (error) {
+            console.error('生成长图失败:', error);
+            alert('生成长图失败，请重试');
+        } finally {
+            btnShot.disabled = false;
+            btnShot.innerHTML = '<i class="fas fa-camera"></i> 导出长图';
+        }
     };
 </script>
 </body>

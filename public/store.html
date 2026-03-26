@@ -4,227 +4,232 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>积分商店</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
     <style>
-        :root{--p:#4361ee;--s:#3f37c9;--g:#4cc9f0;--a:#f72585;--b:#dee2e6;--bg:#f5f7fa;--bg2:#c3cfe2;--w:#fff}
-        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
-        body{min-height:100vh;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:24px}
-        .container{max-width:1200px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);overflow:hidden}
-        header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 32px;background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
-        h1{font-size:1.5rem;font-weight:600;display:flex;align-items:center;gap:8px}
-        nav a{color:#fff;text-decoration:none;margin:0 12px;opacity:.8}nav a.active,nav a:hover{opacity:1}
-        .wallet{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);padding:8px 16px;border-radius:50px;font-weight:600}
-
-        .content{padding:32px}
-        .tab-head{display:flex;gap:24px;margin-bottom:24px;border-bottom:2px solid var(--b)}
-        .tab-btn{padding:10px 20px;font-weight:600;cursor:pointer;color:#6c757d;border-bottom:3px solid transparent}
-        .tab-btn.active{color:var(--p);border-color:var(--p)}
-        .tab{display:none}.tab.active{display:block}
-
-        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px}
-        .card{position:relative;background:var(--w);border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.05);overflow:hidden;transition:.25s}.card:hover{transform:translateY(-4px)}
-        .pic{height:140px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:#fff}
-        .body{padding:16px}.title{font-weight:600;margin-bottom:6px}.price{color:var(--a);font-weight:700;margin-bottom:12px}
-        .btn{width:100%;padding:8px 0;border:none;border-radius:8px;font-weight:600;cursor:pointer;background:var(--a);color:#fff}
-        .btn:disabled{background:var(--b);cursor:not-allowed;color:#6c757d}
-        .del{position:absolute;top:8px;right:8px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(0,0,0,0.35);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem;opacity:.8}
-        .del:hover{opacity:1}
-
-        form{margin-top:32px;display:grid;grid-template-columns:1fr 140px;gap:16px;align-items:end}
-        input{padding:10px;border:1px solid var(--b);border-radius:8px;width:100%}
-        .btn-add{background:var(--g);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
-
-        .list li{margin:12px 0;padding:12px;border:1px solid var(--b);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
-        .list .time{color:#6c757d;font-size:.85rem}
-        .count-tag{position:absolute;top:8px;left:8px;background:var(--g);color:#fff;font-size:.7rem;border-radius:8px;padding:2px 6px}
-
-        /* ===== 手机竖屏响应式 ===== */
-        @media (max-width: 480px) {
-            .container      { width:100%!important; max-width:100%!important; padding:8px; }
-            header          { flex-wrap:wrap!important; padding:12px 8px!important; }
-            nav             { display:flex!important; overflow-x:auto!important; width:100%!important; }
-            nav a           { flex:none!important; padding:8px 6px!important; font-size:.9rem!important; }
-            .wallet         { font-size:.95rem!important; padding:8px!important; }
-            .tab-head       { flex-wrap:wrap!important; gap:8px!important; }
-            .tab-btn        { font-size:.9rem!important; padding:6px 8px!important; }
-            .grid           { grid-template-columns:1fr!important; gap:12px!important; }
-            .card           { padding:12px!important; }
-            .pic            { height:100px!important; }
-            .body, .btn     { font-size:.9rem!important; padding:8px!important; }
-            form            { grid-template-columns:1fr!important; gap:8px!important; }
-            input           { font-size:.95rem!important; padding:8px!important; }
-            .list li        { font-size:.85rem!important; padding:8px!important; }
-            .time           { font-size:.8rem!important; }
-            .count-tag      { font-size:.7rem!important; padding:2px 4px!important; }
+        /* 主题变量 */
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --radius: 16px;
+            --pill: 9999px;
+            --shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.15);
+            --trans: all 0.2s ease;
         }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;background:#f5f7ff;color:#1f2937;}
+        body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(125deg,#667eea,#764ba2);z-index:-2;}
+        .container{max-width:1200px;margin:24px auto;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:var(--radius);box-shadow:0 30px 60px rgba(0,0,0,0.1);overflow:hidden;border:1px solid rgba(255,255,255,0.3);}
+        header{background:rgba(99,102,241,0.9);padding:24px 32px;}
+        .header-content{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;}
+        .logo{display:flex;align-items:center;gap:12px;font-size:1.8rem;font-weight:700;color:var(--white);}
+        nav{display:flex;gap:8px;flex-wrap:wrap;}
+        nav a{color:var(--white);text-decoration:none;padding:8px 16px;border-radius:8px;transition:var(--trans);font-weight:500;}
+        nav a:hover,nav a.active{background:rgba(255,255,255,0.2);}
+        .wallet{background:rgba(255,255,255,0.2);padding:10px 20px;border-radius:12px;display:flex;align-items:center;gap:8px;color:var(--white);font-weight:600;transition:var(--trans);}
+        .wallet:hover{transform:translateY(-2px);}
+        .content{padding:40px;}
+        .tab-head{display:flex;gap:24px;border-bottom:2px solid var(--light-gray);margin-bottom:24px;}
+        .tab-btn{padding:10px 0;font-weight:600;color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;transition:var(--trans);}
+        .tab-btn.active{color:var(--primary);border-color:var(--primary);}
+        .tab{display:none;}
+        .tab.active{display:block;}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px;}
+        .card{position:relative;background:rgba(255,255,255,0.95);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:var(--trans);}
+        .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+        .pic{height:140px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;color:var(--white);background:linear-gradient(135deg,var(--primary-dark),var(--secondary));}
+        .body{padding:16px;}
+        .title{font-weight:600;margin-bottom:6px;}
+        .price{color:var(--accent);font-weight:700;margin-bottom:12px;}
+        .btn,.submit-btn{display:inline-block;padding:12px 24px;border:none;border-radius:var(--pill);background:linear-gradient(90deg,var(--primary),var(--primary-dark));color:var(--white);font-weight:600;cursor:pointer;box-shadow:var(--shadow);transition:var(--trans);text-align:center;}
+        .btn{width:100%;}
+        .submit-btn{width:auto;}
+        .btn:disabled,.submit-btn:disabled{background:var(--light-gray);color:var(--gray);cursor:not-allowed;box-shadow:none;}
+        .btn:not(:disabled):hover,.submit-btn:not(:disabled):hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+        form.add-form{margin-top:32px;display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:end;}
+        input{padding:12px;border:1px solid var(--light-gray);border-radius:var(--radius);font-size:1rem;transition:var(--trans);width:100%;}
+        input:focus{outline:none;box-shadow:0 4px 12px rgba(99,102,241,0.2);}
+        .del{position:absolute;top:12px;right:12px;width:28px;height:28px;background:rgba(255,255,255,0.8);border:none;color:var(--accent);display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;transition:var(--trans);}
+        .del:hover{background:rgba(255,255,255,1);transform:scale(1.1);}
+        .count-tag{position:absolute;top:12px;left:12px;padding:4px 8px;border-radius:8px;background:var(--primary);color:var(--white);font-size:0.75rem;font-weight:600;}
+        ul.list{list-style:none;margin-top:32px;}
+        ul.list li{margin:16px 0;padding:20px 24px;background:rgba(255,255,255,0.95);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;transition:var(--trans);}
+        ul.list li:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+        .time{color:var(--gray);font-size:0.875rem;}
+        @media(max-width:768px){.content{padding:24px;}form.add-form{grid-template-columns:1fr;}nav{gap:6px;}}
+        @media(max-width:480px){header{padding:16px;}.header-content{flex-direction:column;align-items:flex-start;}nav{overflow-x:auto;}.grid{grid-template-columns:1fr;gap:12px;}form.add-form{grid-template-columns:1fr;gap:8px;}}
     </style>
 </head>
 <body>
 <div class="container">
     <header>
-        <h1><i class="fas fa-store"></i> 积分商店</h1>
-        <nav>
-            <a href="index.html">打分系统</a>
-            <a href="note.html">闪电笔记</a>
-            <a href="todo.html">代办清单</a>
-            <a href="store.html" class="active">积分商店</a>
-            <a href="user.html">用户信息</a>
-            <a href="settings.html">设置</a>
-        </nav>
-        <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
+        <div class="header-content">
+            <div class="logo"><i class="fas fa-store"></i><span>积分商店</span></div>
+            <nav>
+                <a href="index.html">打分系统</a>
+                <a href="note.html">闪电笔记</a>
+                <a href="todo.html">待办清单</a>
+                <a href="store.html" class="active">积分商店</a>
+                <a href="user.html">用户信息</a>
+                <a href="settings.html">设置</a>
+            </nav>
+            <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
+        </div>
     </header>
-
     <div class="content">
         <div class="tab-head">
             <div class="tab-btn active" data-tab="goods">商品兑换</div>
             <div class="tab-btn" data-tab="hist">兑换记录</div>
         </div>
-
-        <!-- 商品 TAB -->
         <div class="tab active" id="goods">
             <div class="grid" id="grid"></div>
-
-            <!-- 添加商品表单 -->
-            <form id="add">
+            <form id="add" class="add-form">
                 <input id="name" placeholder="商品名" required />
                 <input id="price" type="number" min="1" placeholder="所需积分" required />
-                <button class="btn-add">添加商品</button>
+                <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> 添加商品</button>
             </form>
         </div>
-
-        <!-- 记录 TAB -->
         <div class="tab" id="hist">
             <ul class="list" id="history"></ul>
         </div>
     </div>
 </div>
-
 <script>
-    if(!localStorage.currentUser) location.href='login.html';
+    if (!localStorage.currentUser) {
+        location.href = 'login.html';
+    }
 
-    const user   = localStorage.currentUser,
-        $      = id => document.getElementById(id),
-        colors = ['#4361ee','#f72585','#7209b7','#3a0ca3','#f15bb5'];
+    const user = localStorage.currentUser;
+    const $ = id => document.getElementById(id);
+    const colors = ['#4361ee', '#f72585', '#7209b7', '#3a0ca3', '#f15bb5'];
 
-    /* ======= 状态 ======= */
-    let store={products:[],history:[]}, wallet=0;
+    let store = { products: [], history: [] };
+    let wallet = 0;
 
-    /* ======= 余额 ======= */
-    async function updateWal(){
-        const tasks = await fetch(`/api/tasks/${user}`).then(r=>r.json());
+    async function updateWal() {
+        const tasks = await fetch(`/api/tasks/${user}`).then(r => r.json());
         const earned = tasks.items
-            ? tasks.items.reduce((s,t)=>s + (t.score/30)*t.minutes, 0)
-            : tasks.reduce((s,t)=>s + (t.score/30)*t.minutes, 0);
-        const spent  = store.history.reduce((s,x)=>s+x.price,0);
-        wallet = Math.floor(earned) - spent;
+            ? tasks.items.reduce((s, t) => s + (t.score / 30) * t.minutes, 0)
+            : tasks.reduce((s, t) => s + (t.score / 30) * t.minutes, 0);
+        const hist = await fetch(`/api/store/${user}`)
+            .then(r => r.json())
+            .then(d => d.history || []);
+        wallet = Math.floor(earned - hist.reduce((s, h) => s + h.price, 0));
         $('wal').textContent = wallet;
     }
 
-    /* ======= 初始化 ======= */
-    async function init(){
-        store = await fetch(`/api/store/${user}`).then(r=>r.json())
-            .then(d=>d.products ? d : {products:[],history:[]});
-        // 向下兼容：旧数据可能只有 value 字段
-        store.products.forEach(p=>{
-            if(p.price===undefined && p.value!==undefined) p.price = p.value;
-        });
+    async function init() {
+        const data = await fetch(`/api/store/${user}`).then(r => r.json());
+        store.products = data.Products || data.products || [];
+        store.history = data.history || [];
         await updateWal();
-        renderGoods(); renderHist();
+        renderGoods();
+        renderHist();
     }
-    init();
 
-    /* ======= 渲染商品 ======= */
-    function renderGoods(){
-        const g=$('grid');g.innerHTML='';
-        if(!store.products.length){
-            g.innerHTML='<p style="grid-column:1/-1;text-align:center;color:#6c757d">暂无商品</p>'; return;
+    function renderGoods() {
+        const grid = $('grid');
+        grid.innerHTML = '';
+        if (!store.products.length) {
+            grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:var(--gray)">暂无商品</p>`;
+            return;
         }
-
-        // 统计最近 天购买次数
-        const weekAgo = Date.now() - 7*24*3600*1000;
+        const weekAgo = Date.now() - 7 * 24 * 3600 * 1000;
         const countMap = {};
-        store.history.forEach(h=>{
-            if(h.date >= weekAgo) countMap[h.id] = (countMap[h.id]||0)+1;
+        store.history.forEach(h => {
+            if (h.date >= weekAgo) countMap[h.id] = (countMap[h.id] || 0) + 1;
         });
 
-        store.products.forEach(p=>{
-            const bg=colors[Math.random()*colors.length|0];
-            const card=document.createElement('div');card.className='card';
-
-            card.innerHTML=
-                `<div class="pic" style="background:${bg}"><i class="fas fa-gift"></i></div>` +
-                `<div class="body">` +
-                `<div class="title">${p.name}</div>` +
-                `<div class="price">${p.price} 积分</div>` +
-                `<button class="btn buy" data-id="${p.id}" ${wallet<p.price?'disabled':''}>兑换</button>` +
-                `</div>` +
-                `<button class="del" data-del="${p.id}" title="删除"><i class="fas fa-trash-alt"></i></button>`;
-            if(countMap[p.id]){
-                const tag=document.createElement('div');
-                tag.className='count-tag';
-                tag.textContent=`近7天 ×${countMap[p.id]}`;
+        store.products.forEach(p => {
+            const bg = colors[Math.floor(Math.random() * colors.length)];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <button class="del" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                <div class="pic" style="background:${bg}"><i class="fas fa-gift"></i></div>
+                <div class="body">
+                    <div class="title">${p.name}</div>
+                    <div class="price">${p.price} 积分</div>
+                    <button class="btn buy" data-id="${p.id}" ${wallet < p.price ? 'disabled' : ''}>兑换</button>
+                </div>
+            `;
+            if (countMap[p.id]) {
+                const tag = document.createElement('div');
+                tag.className = 'count-tag';
+                tag.textContent = `近7天 ×${countMap[p.id]}`;
                 card.appendChild(tag);
             }
-            g.appendChild(card);
+            grid.appendChild(card);
         });
     }
 
-    /* ======= 渲染记录 ======= */
-    function renderHist(){
-        const ul=$('history');ul.innerHTML='';
-        if(!store.history.length){ul.innerHTML='<li>暂无记录</li>';return;}
-        [...store.history].sort((a,b)=>b.date-a.date).forEach(r=>{
-            const li=document.createElement('li');
-            li.innerHTML=`<span>${r.name}</span><span class="time">-${r.price} | ${new Date(r.date).toLocaleString()}</span>`;
-            ul.appendChild(li);
-        });
-    }
-
-    /* ======= 保存到服务器 ======= */
-    function save(){
-        return fetch(`/api/store/${user}`,{
-            method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify(store)
-        });
-    }
-
-    /* ======= 添加商品 ======= */
-    $('add').onsubmit = async e=>{
-        e.preventDefault();
-        const p={
-            id   : Date.now(),
-            name : $('name').value.trim(),
-            price: +$('price').value
-        };
-        store.products.push(p);
-        $('add').reset();
-        await save(); await updateWal(); renderGoods();
-    };
-
-    /* ======= 兑换 / 删除 ======= */
-    $('grid').addEventListener('click', async e=>{
-        const delId=e.target.closest('button[data-del]')?.dataset.del;
-        if(delId){
-            if(!confirm('确定删除该商品？')) return;
-            store.products = store.products.filter(p=>p.id!=delId);
-            await save(); renderGoods(); return;
+    function renderHist() {
+        const historyList = $('history');
+        historyList.innerHTML = '';
+        if (!store.history.length) {
+            historyList.innerHTML = '<li>暂无记录</li>';
+            return;
         }
-        const buyId=e.target.closest('button.buy')?.dataset.id;
-        if(!buyId) return;
-        const p=store.products.find(x=>x.id==buyId);
-        await updateWal();
-        if(wallet<p.price){alert('积分不足');return;}
-        wallet-=p.price;
-        store.history.push({id:p.id,name:p.name,price:p.price,date:Date.now()});
-        await save(); await updateWal(); renderGoods(); renderHist();
+        [...store.history]
+            .sort((a, b) => b.date - a.date)
+            .forEach(r => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${r.name}</span>
+                    <span class="time">-${r.price} | ${new Date(r.date).toLocaleString()}</span>
+                `;
+                historyList.appendChild(li);
+            });
+    }
+
+    async function save() {
+        await fetch(`/api/store/${user}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(store),
+        });
+    }
+
+    document.getElementById('add').addEventListener('submit', async e => {
+        e.preventDefault();
+        store.products.push({ id: Date.now(), name: $('name').value.trim(), price: +$('price').value });
+        $('name').value = ''; $('price').value = '';
+        await save(); renderGoods();
     });
 
-    /* ======= TAB 切换 ======= */
-    document.querySelectorAll('.tab-btn').forEach(btn=>btn.onclick=()=>{
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b===btn));
-        document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id===btn.dataset.tab));
+    document.body.addEventListener('click', async e => {
+        const delBtn = e.target.closest('.del');
+        if (delBtn) {
+            const id = delBtn.dataset.id;
+            if (!confirm('确定删除该商品？')) return;
+            store.products = store.products.filter(p => p.id != id);
+            await save(); await updateWal(); renderGoods();
+            return;
+        }
+        const buyBtn = e.target.closest('button.buy');
+        if (buyBtn) {
+            const buyId = buyBtn.dataset.id;
+            const product = store.products.find(x => x.id == buyId);
+            await updateWal();
+            if (wallet < product.price) {
+                alert('积分不足'); return;
+            }
+            store.history.push({ id: product.id, name: product.name, price: product.price, date: Date.now() });
+            await save(); await updateWal(); renderGoods(); renderHist();
+        }
     });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.id === btn.dataset.tab));
+    }));
+
+    init();
 </script>
 </body>
 </html>

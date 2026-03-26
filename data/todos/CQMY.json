@@ -1,38 +1,200 @@
 [
   {
-    "text": "部署合成大西瓜项目",
-    "done": false
+    "text": "很好",
+    "done": false,
+    "deleted": true,
+    "order": -1.5
   },
   {
-    "text": "重构 人生OS网站",
-    "done": true
+    "text": "wywyyyy",
+    "done": false,
+    "deleted": true,
+    "order": -1
   },
   {
-    "text": "背英语单词",
-    "done": true
+    "text": "yeueyeyey",
+    "done": false,
+    "deleted": true,
+    "order": -1
   },
   {
     "text": "看老友记",
-    "done": false
+    "done": false,
+    "deleted": true,
+    "order": -0.5
   },
   {
-    "text": "完成浪前的表格",
-    "done": false
+    "text": "创建仪表盘",
+    "done": false,
+    "deleted": false,
+    "order": -0.5
   },
   {
+    "text": "把自己的B站重新跑起来",
+    "done": false,
+    "deleted": false,
+    "order": 0.5
+  },
+  {
+    "deleted": false,
+    "text": "发一个朋友圈用来装逼",
+    "done": false,
+    "order": 1
+  },
+  {
+    "deleted": true,
+    "text": "赚1,000,000",
+    "done": false,
+    "order": 2
+  },
+  {
+    "deleted": false,
+    "text": "完成Notion的自动记账系统",
+    "done": false,
+    "order": 3
+  },
+  {
+    "deleted": true,
+    "text": "完成not sent自动开发系统的记账",
+    "done": false,
+    "order": 4
+  },
+  {
+    "deleted": true,
     "text": "买一个安卓手机",
-    "done": false
+    "done": false,
+    "order": 5
   },
   {
-    "text": "完成人生OS3.0",
-    "done": false
+    "deleted": true,
+    "text": "买个安卓手机",
+    "done": true,
+    "order": 6
   },
   {
-    "text": "被英语单词",
-    "done": true
+    "deleted": true,
+    "text": "等会儿去买个安卓手机",
+    "done": false,
+    "order": 7
   },
   {
+    "deleted": true,
+    "text": "等会儿去买一个安卓手机",
+    "done": false,
+    "order": 8
+  },
+  {
+    "deleted": true,
+    "text": "等会儿去买一个安卓手机",
+    "done": false,
+    "order": 9
+  },
+  {
+    "deleted": true,
+    "text": "开经反复",
+    "done": false,
+    "order": 10
+  },
+  {
+    "deleted": false,
+    "text": "部署合成大西瓜项目",
+    "done": false,
+    "order": 11
+  },
+  {
+    "deleted": false,
+    "text": "重构 人生OS网站",
+    "done": true,
+    "order": 12
+  },
+  {
+    "deleted": false,
     "text": "背英语单词",
-    "done": false
+    "done": true,
+    "order": 13
+  },
+  {
+    "deleted": false,
+    "text": "看老友记",
+    "done": false,
+    "order": 14
+  },
+  {
+    "deleted": false,
+    "text": "完成浪前的表格",
+    "done": false,
+    "order": 15
+  },
+  {
+    "deleted": false,
+    "text": "买一个安卓手机",
+    "done": false,
+    "order": 16
+  },
+  {
+    "deleted": false,
+    "text": "完成人生OS3.0",
+    "done": false,
+    "order": 17
+  },
+  {
+    "deleted": false,
+    "text": "被英语单词",
+    "done": true,
+    "order": 18
+  },
+  {
+    "deleted": false,
+    "text": "背英语单词",
+    "done": false,
+    "order": 19
+  },
+  {
+    "deleted": false,
+    "text": "管理阿里云的欠费问题",
+    "done": true,
+    "order": 20
+  },
+  {
+    "deleted": false,
+    "text": "买keychron的键盘",
+    "done": true,
+    "order": 21
+  },
+  {
+    "deleted": true,
+    "text": "6666",
+    "done": false,
+    "order": 22
+  },
+  {
+    "deleted": true,
+    "text": "6666",
+    "done": false,
+    "order": 23
+  },
+  {
+    "deleted": true,
+    "text": 838474,
+    "done": false,
+    "order": 24
+  },
+  {
+    "deleted": true,
+    "text": "iidjd",
+    "done": false,
+    "order": 25
+  },
+  {
+    "text": "235235235",
+    "done": false,
+    "deleted": true,
+    "order": 26
+  },
+  {
+    "text": "234235",
+    "done": false,
+    "deleted": true,
+    "order": 27
   }
 ]

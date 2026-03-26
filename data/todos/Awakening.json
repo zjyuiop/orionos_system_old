@@ -1,22 +1,92 @@
 [
   {
     "text": "商业课第二节＋作业",
-    "done": true
+    "done": true,
+    "deleted": true
   },
   {
     "text": "盲打",
-    "done": true
+    "done": true,
+    "deleted": true
   },
   {
     "text": "AI课回放＋作业",
-    "done": false
+    "done": true,
+    "deleted": true
   },
   {
     "text": "阅读洪武",
-    "done": true
+    "done": true,
+    "deleted": true
   },
   {
     "text": "写文章",
-    "done": false
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "睡眠系统整理",
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "直播课",
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "老友记",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "电影观后感",
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "樊登读书活法",
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "盲打",
+    "done": true,
+    "deleted": true
+  },
+  {
+    "text": "阅读活法",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "直播课",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "完成作业",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "系统整理",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "盲打",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "背单词",
+    "done": false,
+    "deleted": false
+  },
+  {
+    "text": "阅读洪武",
+    "done": false,
+    "deleted": false
   }
 ]

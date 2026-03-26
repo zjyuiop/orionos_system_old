@@ -9,6 +9,7 @@ const path    = require('path');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+
 //-------------------------------------------------- upload begin
 const multer = require('multer');
 //const path   = require('path');
@@ -17,6 +18,14 @@ const upDir  = path.join(__dirname,'public','uploads');
 if(!fs.existsSync(upDir)) fs.mkdirSync(upDir,{recursive:true});
 const upload = multer({ dest: upDir });
 //-------------------------------------------------- upload end
+
+
+
+/* ========= 0. notion嵌入式框架做准备 ========= */
+app.use((req, res, next) => {
+    res.setHeader('Content-Security-Policy', "frame-ancestors https://www.notion.so");
+    next();
+});
 
 
 /* ========= 1. 静态资源 ========= */
@@ -162,6 +171,13 @@ app.get('/api/user/:username', (req, res) => {
 
 /* === 保存 / 更新用户信息 ============================ */
 app.post('/api/user/:username', (req, res) => {
+    
+    
+    
+    
+    
+    
+    
     const uname = req.params.username;
     const users = read(USER_FILE, {});
     if (!users[uname]) return res.status(404).json({ msg:'用户不存在' });
@@ -172,3 +188,5 @@ app.post('/api/user/:username', (req, res) => {
     write(USER_FILE, users);
     res.json({ msg:'ok' });
 });
+
+
