@@ -1,0 +1,86 @@
+﻿<!-- /public/note.html -->
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>闪电笔记</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--p:#4361ee;--s:#3f37c9;--a:#f72585;--b:#dee2e6;--bg:#f5f7fa;--bg2:#c3cfe2;--w:#fff}
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif}
+        body{min-height:100vh;background:linear-gradient(135deg,var(--bg),var(--bg2));padding:24px}
+        .container{max-width:1000px;margin:0 auto;background:var(--w);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.1);overflow:hidden}
+        header{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;padding:20px 32px;background:linear-gradient(90deg,var(--p),var(--s));color:#fff}
+        h1{font-size:1.5rem;font-weight:600;display:flex;align-items:center;gap:8px}
+        nav a{color:#fff;text-decoration:none;margin:0 12px;opacity:.85}nav a.active,nav a:hover{opacity:1}
+        .wallet{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.25);padding:8px 16px;border-radius:50px;font-weight:600}
+        .content{padding:32px}
+        form{display:grid;grid-template-columns:1fr 140px;gap:16px;margin-bottom:24px}
+        textarea{width:100%;min-height:90px;padding:12px;border:1px solid var(--b);border-radius:10px;resize:vertical}
+        .btn{padding:12px;border:none;border-radius:10px;font-weight:600;background:var(--p);color:#fff;cursor:pointer}
+        .list li{margin:12px 0;padding:14px 18px;border:1px solid var(--b);border-radius:10px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+        .time{color:#6c757d;font-size:.85rem}
+        .del{border:none;background:none;color:var(--a);cursor:pointer}
+    </style></head><body>
+<div class="container">
+    <header>
+        <h1><i class="fas fa-bolt"></i> 闪电笔记</h1>
+        <nav>
+            <a href="index.html">打分系统</a>
+            <a href="note.html" class="active">闪电笔记</a>
+            <a href="todo.html">代办清单</a>
+            <a href="store.html">积分商店</a>
+        </nav>
+        <div class="wallet"><i class="fas fa-coins"></i></div>
+    </header>
+
+    <div class="content">
+        <form id="addForm">
+            <textarea id="txt" placeholder="快速记录灵感、想法…"></textarea>
+            <button class="btn">添加</button>
+        </form>
+        <ul class="list" id="list"></ul>
+    </div>
+</div>
+
+<script>
+    if(!localStorage.currentUser) location.href='login.html';
+    const user=localStorage.currentUser,$=id=>document.getElementById(id);
+    let notes=[];
+
+    /* -- api -- */
+    const load=()=>fetch(`/api/notes/${user}`).then(r=>r.json()).then(d=>notes=d);
+    const save=()=>fetch(`/api/notes/${user}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(notes)});
+    const wallet=async()=>{
+        const tasks=await fetch(`/api/tasks/${user}`).then(r=>r.json()).catch(()=>[]);
+        const store=await fetch(`/api/store/${user}`).then(r=>r.json()).catch(()=>({history:[]}));
+        const earned=tasks.reduce((s,t)=>s+t.score/30*t.minutes,0);
+        const spent=store.history.reduce((s,i)=>s+i.price,0);
+        $('wal').textContent=Math.floor(earned-spent);
+    };
+
+    /* -- render -- */
+    function render(){
+        const ul=$('list');ul.innerHTML='';
+        if(!notes.length){ul.innerHTML='<li>暂无笔记</li>';return;}
+        [...notes].reverse().forEach((n,i)=>{
+            const li=document.createElement('li');
+            li.innerHTML=`<span>${n.text}</span><span class="time">${new Date(n.time).toLocaleString()}</span>
+      <button class="del" data-i="${i}"><i class="fas fa-trash"></i></button>`;
+            ul.appendChild(li);
+        });
+    }
+
+    /* -- events -- */
+    $('addForm').onsubmit=async e=>{
+        e.preventDefault();
+        const v=$('txt').value.trim();if(!v)return;
+        notes.push({text:v,time:Date.now()});
+        $('txt').value='';await save();render();
+    };
+    $('list').onclick=async e=>{
+        const btn=e.target.closest('.del');if(!btn)return;
+        const idx=btn.dataset.i;notes.splice(notes.length-1-idx,1);
+        await save();render();
+    };
+
+    (async()=>{await load();render();wallet();})();
+</script></body></html>
