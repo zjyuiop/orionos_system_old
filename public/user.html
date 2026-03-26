@@ -62,10 +62,10 @@
         textarea{resize:vertical;min-height:100px;}
         .btn-save{margin-top:24px;padding:12px 24px;background:linear-gradient(90deg,var(--primary),var(--primary-dark));color:var(--white);border:none;border-radius:9999px;font-weight:600;cursor:pointer;box-shadow:0 6px 20px rgba(99,102,241,0.3);transition:var(--transition);}
         .btn-save:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
-        #msg{margin-top:12px;color:var(--success);opacity:0;transition:var(--transition);} 
+        #msg{margin-top:12px;color:var(--success);opacity:0;transition:var(--transition);}
         #msg.show{opacity:1;}
         /* 响应式 */
-        @media(max-width:768px){.content{padding:24px;}header{padding:20px;}.btn-save{width:100%;text-align:center;}}        
+        @media(max-width:768px){.content{padding:24px;}header{padding:20px;}.btn-save{width:100%;text-align:center;}}
         @media(max-width:480px){header{padding:16px;} .header-content{flex-direction:column;align-items:flex-start;}nav{overflow-x:auto;} .form-card{padding:16px;} .content{padding:16px;} .btn-save{width:100%;}}
     </style>
 </head>
@@ -75,6 +75,7 @@
         <div class="header-content">
             <div class="logo"><i class="fas fa-user-circle"></i><span>用户信息</span></div>
             <nav>
+                <a href="dashboard.html">看板</a>
                 <a href="index.html">打分系统</a>
                 <a href="note.html">闪电笔记</a>
                 <a href="todo.html">待办清单</a>
@@ -159,9 +160,9 @@
     $('username').value=user;
     fetch(`/api/user/${encodeURIComponent(user)}`)
         .then(r=>r.json()).then(d=>{
-            if(d.avatar) $('avatar').src=d.avatar;
-            ['nickname','gender','birthday','location','signature','wechat'].forEach(k=>{if(d[k]!=null)$(k).value=d[k];});
-        });
+        if(d.avatar) $('avatar').src=d.avatar;
+        ['nickname','gender','birthday','location','signature','wechat'].forEach(k=>{if(d[k]!=null)$(k).value=d[k];});
+    });
     // 头像上传
     const aw=document.querySelector('.avatar-wrapper'),af=$('avatar-file'),img=$('avatar');
     aw.addEventListener('click',()=>af.click());

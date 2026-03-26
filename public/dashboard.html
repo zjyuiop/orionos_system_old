@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>数据看板</title>
+    <!-- 图标库 & 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            --radius: 16px;
+            --transition: all 0.3s;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f5f7ff; min-height:100vh; color:var(--gray); position:relative; }
+        body::before { content:''; position:fixed; top:0; left:0; right:0; bottom:0; background:linear-gradient(125deg,#667eea,#764ba2); z-index:-1; }
+        .container { width:100%; max-width:1200px; margin:16px auto; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border-radius:24px; box-shadow:var(--shadow-lg); overflow:hidden; border:1px solid rgba(255,255,255,0.3); }
+        header { background:rgba(99,102,241,0.9); padding:24px 32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+        .logo { display:flex; align-items:center; gap:12px; color:var(--white); font-size:1.8rem; font-weight:700; }
+        nav { display:flex; gap:8px; flex-wrap:wrap; }
+        nav a { color:var(--white); text-decoration:none; padding:8px 16px; border-radius:8px; transition:var(--transition); white-space:nowrap; }
+        nav a:hover, nav a.active { background:rgba(255,255,255,0.2); }
+        .header-controls { display:flex; align-items:center; gap:16px; }
+        .wallet { background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:12px; display:flex; align-items:center; gap:8px; color:var(--white); transition:var(--transition); }
+        .wallet:hover { transform:translateY(-2px); }
+        .content { padding:32px; }
+        .range-switch { display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
+        .range-switch button { padding:8px 16px; border:none; border-radius:9999px; background:var(--light-gray); color:var(--gray); cursor:pointer; transition:var(--transition); flex:1 1 auto; white-space:nowrap; }
+        .range-switch button.active { background:var(--primary); color:var(--white); }
+        .card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:24px; }
+        .card h2 { margin-bottom:16px; font-size:1.25rem; color:var(--primary-dark); }
+        .flex-row { display:flex; gap:24px; flex-wrap:wrap; }
+        .flex-item { flex:1 1 45%; }
+        canvas { width:100% !important; height:auto !important; }
+        .suggestions { list-style:none; margin-top:16px; }
+        .suggestions li { margin-bottom:12px; padding:12px; background:var(--light-gray); border-radius:8px; }
+        .btn-save { display:inline-block; margin-top:8px; padding:8px 16px; background:var(--primary); color:var(--white); border:none; border-radius:9999px; cursor:pointer; transition:var(--transition); }
+        .btn-save:hover { background:var(--primary-dark); }
+
+        /* 手机优化 */
+        @media (max-width: 768px) {
+            header { padding:16px; }
+            nav { gap:4px; margin-top:8px; }
+            nav a { padding:6px 12px; font-size:0.9rem; }
+            .header-controls { margin-top:8px; }
+            .content { padding:16px; }
+            .range-switch { gap:8px; margin-bottom:16px; }
+            .range-switch button { padding:6px 12px; font-size:0.9rem; }
+            .card { padding:16px; margin-bottom:16px; }
+            .flex-row { flex-direction:column; gap:16px; }
+            .flex-item { flex:1 1 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo"><i class="fas fa-chart-line"></i><span>数据看板</span></div>
+        <nav>
+            <a href="dashboard.html" class="active">看板</a>
+            <a href="index.html">打分系统</a>
+            <a href="note.html">闪电笔记</a>
+            <a href="todo.html">代办清单</a>
+            <a href="store.html">积分商店</a>
+            <a href="user.html">用户信息</a>
+            <a href="settings.html">设置</a>
+        </nav>
+        <div class="header-controls">
+            <div class="wallet"><i class="fas fa-coins"></i><span id="wal">0</span></div>
+        </div>
+    </header>
+    <div class="content">
+        <div class="range-switch">
+            <button data-range="week" class="active">一周</button>
+            <button data-range="month">一月</button>
+            <button data-range="year">一年</button>
+        </div>
+        <!-- 积分走势 -->
+        <div class="card">
+            <h2>积分走势（总量）</h2>
+            <canvas id="pointsChart"></canvas>
+        </div>
+        <!-- 代办完成率 & 商店支出占比 并排 -->
+        <div class="flex-row">
+            <div class="card flex-item">
+                <h2>待办完成率</h2>
+                <canvas id="todoChart"></canvas>
+            </div>
+            <div class="card flex-item">
+                <h2>商店支出占比</h2>
+                <canvas id="storeChart"></canvas>
+            </div>
+        </div>
+        <!-- DeepSeek 建议 -->
+        <div class="card">
+            <h2>DeepSeek R1 复盘建议</h2>
+            <button id="btnFullDeepSeek" class="btn-save">对所有数据做复盘</button>
+            <ul id="suggestions" class="suggestions">加载中...</ul>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    if (!localStorage.currentUser) location.href = 'login.html';
+    const user = localStorage.currentUser;
+    const $ = id => document.getElementById(id);
+    const varColor = name => getComputedStyle(document.documentElement).getPropertyValue(name);
+    let pointsChart, todoChart, storeChart;
+
+    function renderSuggestions(list) {
+        const ul = $('suggestions'); ul.innerHTML = '';
+        list.forEach(item => {
+            const li = document.createElement('li'); li.textContent = item; ul.appendChild(li);
+        });
+    }
+
+    async function runFullDeepSeek() {
+        const resp = await fetch('/api/deepseek/all', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user })
+        });
+        if (resp.ok) {
+            const { suggestions } = await resp.json(); renderSuggestions(suggestions);
+        }
+    }
+
+    async function loadCachedDeepSeek() {
+        const resp = await fetch(`/api/deepseek/all/${encodeURIComponent(user)}`);
+        if (resp.ok) {
+            const { suggestions } = await resp.json(); renderSuggestions(suggestions);
+        } else {
+            await runFullDeepSeek();
+        }
+    }
+
+    async function updateWal() {
+        const [tasksRes, storeRes] = await Promise.all([
+            fetch(`/api/tasks/${user}`), fetch(`/api/store/${user}`)
+        ]);
+        const tasksData = await tasksRes.json();
+        const tasks = tasksData.items || tasksData;
+        const earned = tasks.reduce((s,t) => s + (t.score/30)*t.minutes, 0);
+        const storeData = await storeRes.json();
+        const spent = (storeData.history || []).reduce((s,h) => s + h.price, 0);
+        $('wal').textContent = Math.floor(earned - spent);
+    }
+
+    async function loadCharts(range) {
+        const [tasksRes, storeRes, todosRes] = await Promise.all([
+            fetch(`/api/tasks/${user}`), fetch(`/api/store/${user}`), fetch(`/api/todos/${user}`)
+        ]);
+        const tasksData = await tasksRes.json(); const tasks = tasksData.items || tasksData;
+        const storeData = await storeRes.json(); const history = storeData.history || [];
+        const todos = await todosRes.json();
+        const now = Date.now(), days = range==='week'?7: range==='month'?30:365;
+        const start = now - days*24*3600*1000;
+        const dates = Array.from({length: days+1}, (_,i) => new Date(start + i*24*3600*1000).toLocaleDateString());
+
+        const sums = dates.map(d => {
+            const end = new Date(d).setHours(23,59,59,999);
+            const e = tasks.filter(t => new Date(t.date) <= end)
+                .reduce((s,t) => s + (t.score/30)*t.minutes, 0);
+            const s = history.filter(h => new Date(h.date) <= end)
+                .reduce((s,h) => s + h.price, 0);
+            return Math.floor(e - s);
+        });
+        const maxSum = Math.max(...sums, 0);
+        pointsChart.data.labels = dates; pointsChart.data.datasets[0].data = sums;
+        pointsChart.options.scales.y = { beginAtZero:true, suggestedMax: maxSum*1.2 };
+        pointsChart.update();
+
+        const active = todos.filter(t => !t.deleted);
+        const done = active.filter(t => t.done).length; const total = active.length;
+        todoChart.data.datasets[0].data = [done, total-done]; todoChart.update();
+
+        const spendMap = {};
+        history.forEach(h => spendMap[h.name] = (spendMap[h.name]||0) + h.price);
+        const names = Object.keys(spendMap), values = names.map(n => spendMap[n]);
+        const palette = [varColor('--primary'), varColor('--secondary'), varColor('--accent'), varColor('--success'), varColor('--warning'), varColor('--danger')];
+        const colors = names.map((_,i) => palette[i % palette.length]);
+        storeChart.data.labels = names; storeChart.data.datasets[0].data = values; storeChart.data.datasets[0].backgroundColor = colors;
+        storeChart.update();
+    }
+
+    window.onload = () => {
+        const pCtx = $('pointsChart').getContext('2d');
+        const tCtx = $('todoChart').getContext('2d');
+        const sCtx = $('storeChart').getContext('2d');
+        pointsChart = new Chart(pCtx, {
+            type: 'line', data: { labels: [], datasets: [{ label:'积分总量', borderColor: varColor('--primary'), backgroundColor:'rgba(99,102,241,0.1)', fill:true, data:[] }] },
+            options:{ scales:{ y:{ beginAtZero:true } } }
+        });
+        todoChart = new Chart(tCtx, {
+            type: 'doughnut', data: { labels:['已完成','未完成'], datasets:[{ data:[0,0], backgroundColor:[varColor('--success'),varColor('--light-gray')] }] },
+            options:{ plugins:{ legend:{ position:'bottom' } } }
+        });
+        storeChart = new Chart(sCtx, {
+            type: 'doughnut', data: { labels:[], datasets:[{ data:[], backgroundColor:[] }] },
+            options:{ plugins:{ legend:{ position:'bottom' } } }
+        });
+
+        document.querySelectorAll('.range-switch button').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('.range-switch button').forEach(b => b.classList.toggle('active', b===btn));
+            loadCharts(btn.dataset.range);
+        }));
+        document.getElementById('btnFullDeepSeek').addEventListener('click', runFullDeepSeek);
+
+        updateWal(); loadCharts('week'); loadCachedDeepSeek();
+    };
+</script>
+</body>
+</html>
